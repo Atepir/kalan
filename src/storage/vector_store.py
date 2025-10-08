@@ -1,8 +1,9 @@
 """
-Vector storage using Qdrant.
+Vector storage interface (simplified - Qdrant removed).
 
-This module provides semantic search and embedding storage
-using Qdrant vector database.
+This module provides a stub interface for vector storage.
+The implementation has been simplified by removing Qdrant dependency.
+If you need vector search in the future, consider using PostgreSQL with pgvector.
 """
 
 from __future__ import annotations
@@ -10,9 +11,6 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Any
 from uuid import UUID
-
-from qdrant_client import AsyncQdrantClient
-from qdrant_client.models import Distance, PointStruct, VectorParams
 
 from src.utils.config import get_settings
 from src.utils.logging import get_logger
@@ -70,87 +68,55 @@ class VectorStore(ABC):
         pass
 
 
-class QdrantVectorStore(VectorStore):
+class SimpleVectorStore(VectorStore):
     """
-    Qdrant implementation of vector storage.
+    Simplified vector storage implementation (stub).
 
-    Provides semantic search capabilities for papers, concepts, and embeddings.
+    This is a no-op implementation since Qdrant has been removed for simplicity.
+    If you need vector search in the future, consider using PostgreSQL with pgvector.
     """
 
     def __init__(self):
-        """Initialize Qdrant vector store."""
+        """Initialize simple vector store."""
         self.settings = get_settings()
-        self.client: AsyncQdrantClient | None = None
         self.logger = get_logger(__name__)
+        self._collections: dict[str, dict] = {}
+        self._connected = False
 
     async def connect(self) -> None:
-        """Establish connection to Qdrant."""
-        if self.client is not None:
-            return
-
-        try:
-            self.client = AsyncQdrantClient(
-                url=self.settings.qdrant_url,
-                timeout=30.0,
-            )
-            self.logger.info("qdrant_connection_established")
-
-            # Ensure default collection exists
-            await self._ensure_default_collection()
-
-        except Exception as e:
-            self.logger.error("qdrant_connection_failed", error=str(e))
-            raise
+        """Establish connection (no-op)."""
+        if not self._connected:
+            self.logger.info("vector_store_connected (stub implementation)")
+            self._connected = True
 
     async def disconnect(self) -> None:
-        """Close connection to Qdrant."""
-        if self.client:
-            await self.client.close()
-            self.client = None
-            self.logger.info("qdrant_connection_closed")
+        """Close connection (no-op)."""
+        if self._connected:
+            self.logger.info("vector_store_disconnected")
+            self._connected = False
 
     async def create_collection(
         self, collection_name: str, vector_size: int, distance: str = "cosine"
     ) -> None:
         """
-        Create a new collection for vectors.
+        Create a new collection for vectors (no-op).
 
         Args:
             collection_name: Name of the collection
             vector_size: Dimension of vectors
             distance: Distance metric (cosine, euclid, dot)
         """
-        if not self.client:
-            await self.connect()
-
-        try:
-            distance_map = {
-                "cosine": Distance.COSINE,
-                "euclid": Distance.EUCLID,
-                "dot": Distance.DOT,
+        if collection_name not in self._collections:
+            self._collections[collection_name] = {
+                "vector_size": vector_size,
+                "distance": distance,
+                "vectors": {}
             }
-
-            await self.client.create_collection(
-                collection_name=collection_name,
-                vectors_config=VectorParams(
-                    size=vector_size,
-                    distance=distance_map.get(distance, Distance.COSINE),
-                ),
-            )
-
             self.logger.info(
-                "collection_created",
+                "collection_created (stub)",
                 collection=collection_name,
                 vector_size=vector_size,
             )
-
-        except Exception as e:
-            self.logger.error(
-                "collection_creation_failed",
-                collection=collection_name,
-                error=str(e),
-            )
-            raise
 
     async def upsert_vectors(
         self,
@@ -160,7 +126,7 @@ class QdrantVectorStore(VectorStore):
         payloads: list[dict[str, Any]] | None = None,
     ) -> None:
         """
-        Insert or update vectors in collection.
+        Insert or update vectors in collection (no-op).
 
         Args:
             collection_name: Target collection
@@ -168,36 +134,11 @@ class QdrantVectorStore(VectorStore):
             vectors: Vector embeddings
             payloads: Optional metadata for each vector
         """
-        if not self.client:
-            await self.connect()
-
-        try:
-            if payloads is None:
-                payloads = [{}] * len(ids)
-
-            points = [
-                PointStruct(id=id_, vector=vector, payload=payload)
-                for id_, vector, payload in zip(ids, vectors, payloads)
-            ]
-
-            await self.client.upsert(
-                collection_name=collection_name,
-                points=points,
-            )
-
-            self.logger.info(
-                "vectors_upserted",
-                collection=collection_name,
-                count=len(ids),
-            )
-
-        except Exception as e:
-            self.logger.error(
-                "vector_upsert_failed",
-                collection=collection_name,
-                error=str(e),
-            )
-            raise
+        self.logger.info(
+            "vectors_upserted (stub)",
+            collection=collection_name,
+            count=len(ids),
+        )
 
     async def search(
         self,
@@ -207,7 +148,7 @@ class QdrantVectorStore(VectorStore):
         filter_conditions: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
         """
-        Search for similar vectors.
+        Search for similar vectors (returns empty list).
 
         Args:
             collection_name: Collection to search
@@ -216,193 +157,128 @@ class QdrantVectorStore(VectorStore):
             filter_conditions: Optional filters on metadata
 
         Returns:
-            List of search results with scores and payloads
+            Empty list (stub implementation)
         """
-        if not self.client:
-            await self.connect()
-
-        try:
-            results = await self.client.search(
-                collection_name=collection_name,
-                query_vector=query_vector,
-                limit=limit,
-                query_filter=filter_conditions,
-            )
-
-            search_results = []
-            for result in results:
-                search_results.append({
-                    "id": result.id,
-                    "score": result.score,
-                    "payload": result.payload or {},
-                })
-
-            self.logger.info(
-                "vector_search_complete",
-                collection=collection_name,
-                results_count=len(search_results),
-            )
-
-            return search_results
-
-        except Exception as e:
-            self.logger.error(
-                "vector_search_failed",
-                collection=collection_name,
-                error=str(e),
-            )
-            raise
+        self.logger.info(
+            "vector_search_complete (stub)",
+            collection=collection_name,
+            results_count=0,
+        )
+        return []
 
     async def delete_vectors(
         self, collection_name: str, ids: list[str]
     ) -> None:
         """
-        Delete vectors by ID.
+        Delete vectors by ID (no-op).
 
         Args:
             collection_name: Collection name
             ids: Vector IDs to delete
         """
-        if not self.client:
-            await self.connect()
-
-        try:
-            await self.client.delete(
-                collection_name=collection_name,
-                points_selector=ids,
-            )
-
-            self.logger.info(
-                "vectors_deleted",
-                collection=collection_name,
-                count=len(ids),
-            )
-
-        except Exception as e:
-            self.logger.error(
-                "vector_deletion_failed",
-                collection=collection_name,
-                error=str(e),
-            )
-            raise
-
-    async def _ensure_default_collection(self) -> None:
-        """Ensure the default research_knowledge collection exists."""
-        try:
-            collections = await self.client.get_collections()
-            collection_names = [c.name for c in collections.collections]
-
-            if "research_knowledge" not in collection_names:
-                await self.create_collection(
-                    collection_name="research_knowledge",
-                    vector_size=384,  # Default embedding size
-                    distance="cosine",
-                )
-
-        except Exception as e:
-            self.logger.warning(
-                "default_collection_check_failed",
-                error=str(e),
-            )
-
-    async def embed_text(self, text: str) -> list[float]:
-        """
-        Generate embedding for text.
-
-        Note: This is a placeholder. In production, use a proper embedding model.
-
-        Args:
-            text: Text to embed
-
-        Returns:
-            Embedding vector
-        """
-        # TODO: Integrate with actual embedding model
-        # For now, return dummy vector
-        import hashlib
-
-        hash_obj = hashlib.md5(text.encode())
-        hash_int = int(hash_obj.hexdigest(), 16)
-
-        # Generate deterministic "embedding"
-        embedding = [(hash_int >> i) % 1000 / 1000.0 for i in range(384)]
-
-        return embedding
+        self.logger.info(
+            "vectors_deleted (stub)",
+            collection=collection_name,
+            count=len(ids),
+        )
 
     async def store_paper_embedding(
         self,
         paper_id: str,
         title: str,
         abstract: str,
-        embedding: list[float] | None = None,
     ) -> None:
         """
-        Store paper embedding for semantic search.
+        Store paper embedding (no-op).
 
         Args:
-            paper_id: Paper identifier
+            paper_id: Unique paper identifier
             title: Paper title
             abstract: Paper abstract
-            embedding: Pre-computed embedding (or will generate)
         """
-        if embedding is None:
-            # Generate embedding from title + abstract
-            text = f"{title}\n\n{abstract}"
-            embedding = await self.embed_text(text)
-
-        payload = {
-            "paper_id": paper_id,
-            "title": title,
-            "abstract": abstract,
-            "type": "paper",
-        }
-
-        await self.upsert_vectors(
-            collection_name="research_knowledge",
-            ids=[paper_id],
-            vectors=[embedding],
-            payloads=[payload],
+        self.logger.info(
+            "paper_embedding_stored (stub)",
+            paper_id=paper_id,
         )
 
-    async def search_similar_papers(
+    async def search_papers(
+        self,
+        query_text: str,
+        limit: int = 10,
+        filters: dict[str, Any] | None = None,
+    ) -> list[dict[str, Any]]:
+        """
+        Search for similar papers (returns empty list).
+
+        Args:
+            query_text: Search query
+            limit: Maximum results
+            filters: Optional metadata filters
+
+        Returns:
+            Empty list (stub implementation)
+        """
+        self.logger.info(
+            "paper_search_complete (stub)",
+            query=query_text,
+            results_count=0,
+        )
+        return []
+
+    async def store_concept_embedding(
+        self,
+        concept_id: UUID | str,
+        name: str,
+        description: str,
+    ) -> None:
+        """
+        Store concept embedding (no-op).
+
+        Args:
+            concept_id: Unique concept identifier
+            name: Concept name
+            description: Concept description
+        """
+        self.logger.info(
+            "concept_embedding_stored (stub)",
+            concept_id=str(concept_id),
+        )
+
+    async def search_concepts(
         self,
         query_text: str,
         limit: int = 10,
     ) -> list[dict[str, Any]]:
         """
-        Search for papers similar to query text.
+        Search for similar concepts (returns empty list).
 
         Args:
             query_text: Search query
             limit: Maximum results
 
         Returns:
-            List of similar papers
+            Empty list (stub implementation)
         """
-        query_embedding = await self.embed_text(query_text)
-
-        results = await self.search(
-            collection_name="research_knowledge",
-            query_vector=query_embedding,
-            limit=limit,
-            filter_conditions={"type": "paper"},
+        self.logger.info(
+            "concept_search_complete (stub)",
+            query=query_text,
+            results_count=0,
         )
-
-        return results
+        return []
 
 
 # Singleton instance
-_vector_store: QdrantVectorStore | None = None
+_vector_store: SimpleVectorStore | None = None
 
 
-def get_vector_store() -> QdrantVectorStore:
+def get_vector_store() -> SimpleVectorStore:
     """
-    Get the global vector store instance.
+    Get the singleton vector store instance.
 
     Returns:
-        QdrantVectorStore instance
+        SimpleVectorStore instance
     """
     global _vector_store
     if _vector_store is None:
-        _vector_store = QdrantVectorStore()
+        _vector_store = SimpleVectorStore()
     return _vector_store

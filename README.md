@@ -36,10 +36,10 @@ This system explores emergent behaviors in multi-agent learning systems while pr
 │  Agent Layer   │    │   Activities   │  │   LLM    │  │ Storage │
 │                │    │                │  │ Client   │  │ Layer   │
 │ • Identity     │◄───┤ • Learning     │◄─┤          │  │         │
-│ • Knowledge    │    │ • Teaching     │  │ Claude   │  │ • Neo4j │
-│ • Reputation   │    │ • Research     │  │ API      │  │ • Qdrant│
-│ • Stage        │    │ • Review       │  └──────────┘  │ • PostgreSQL│
-└───────┬────────┘    └────────┬───────┘               └──┬──────┘
+│ • Knowledge    │    │ • Teaching     │  │ Ollama   │  │ • Neo4j │
+│ • Reputation   │    │ • Research     │  │ API      │  │ • PostgreSQL│
+│ • Stage        │    │ • Review       │  └──────────┘  └──────────┘
+└───────┬────────┘    └────────┬───────┘
         │                      │                           │
         └──────────┬───────────┴───────────────────────────┘
                    │
@@ -80,9 +80,8 @@ This system explores emergent behaviors in multi-agent learning systems while pr
 
 5. **Storage** (`src/storage/`)
    - **Neo4j**: Knowledge graphs and relationship networks
-   - **Qdrant**: Vector embeddings for semantic search
-   - **PostgreSQL**: Agent state, papers, and structured data
-   - **Redis**: Message queuing and caching
+   - **PostgreSQL**: Agent state, papers, and structured data (with caching via tables)
+   - **Vector Store**: Simplified stub (Qdrant removed for simplicity)
 
 ## 🚀 Quick Start
 
@@ -164,9 +163,7 @@ This system explores emergent behaviors in multi-agent learning systems while pr
 
 - **Ollama API**: http://localhost:11434
 - **Neo4j Browser**: http://localhost:7474 (neo4j / dev_password)
-- **Qdrant Dashboard**: http://localhost:6333/dashboard
 - **PostgreSQL**: localhost:5432 (agent_system / dev_password)
-- **Redis**: localhost:6379
 
 ## 📚 Agent Lifecycle
 
@@ -447,7 +444,8 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 - [x] Core agent system
 - [x] Basic learning and teaching
 - [x] Literature MCP server
-- [x] PostgreSQL/Neo4j/Qdrant integration
+- [x] PostgreSQL/Neo4j integration
+- [x] Simplified architecture (Qdrant and Redis removed)
 
 ### Phase 2: Enhanced Activities (Q1 2026)
 - [ ] Full research workflow implementation
@@ -498,7 +496,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 **Issue**: Docker services won't start
 ```powershell
 # Solution: Check ports aren't already in use
-netstat -ano | findstr "5432 6379 6333 7474 7687"
+netstat -ano | findstr "5432 7474 7687 11434"
 
 # Stop conflicting services or change ports in docker-compose.yml
 ```

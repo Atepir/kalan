@@ -15,7 +15,7 @@ All 12 core tasks have been completed:
 ✅ **LLM Integration** - Ollama with 4 specialized models  
 ✅ **MCP Servers** - 4 Model Context Protocol servers  
 ✅ **Orchestration** - Community, matchmaking, workflows, events  
-✅ **Storage** - PostgreSQL, Neo4j, Qdrant, Redis, document store  
+✅ **Storage** - PostgreSQL, Neo4j, document store (Qdrant and Redis removed)  
 ✅ **Utilities** - Config, logging, metrics  
 ✅ **Scripts** - Seeding, simulation, analysis  
 ✅ **Configuration** - YAML templates, curricula, rubrics  
@@ -77,7 +77,7 @@ project-kalan/
 │   │   │   └── events.py          # Event system
 │   │   │
 │   │   ├── storage/               # Data persistence (4 modules)
-│   │   │   ├── vector_store.py    # Qdrant embeddings
+│   │   │   ├── vector_store.py    # Stub implementation (simplified)
 │   │   │   ├── graph_store.py     # Neo4j knowledge graph
 │   │   │   ├── document_store.py  # File-based document store
 │   │   │   └── state_store.py     # PostgreSQL agent state
@@ -268,11 +268,10 @@ Capabilities expand at each stage:
 
 ### Storage Layer (4 Systems)
 
-1. **PostgreSQL** - Agent state, session history
+1. **PostgreSQL** - Agent state, session history, caching
 2. **Neo4j** - Knowledge graph with prerequisites
-3. **Qdrant** - Vector embeddings for semantic search
-4. **Redis** - Caching, real-time metrics
-5. **File System** - Papers, experiments, reports
+3. **File System** - Papers, experiments, reports
+4. **Vector Store** - Stub implementation (Qdrant removed for simplicity)
 
 ---
 
@@ -375,7 +374,7 @@ Most active pairs:
 ✅ **5 developmental stages** with progression mechanics  
 ✅ **4 activity types** (learning, teaching, research, review)  
 ✅ **4 MCP servers** for external tool integration  
-✅ **4 storage systems** (PostgreSQL, Neo4j, Qdrant, Redis)  
+✅ **2 storage systems** (PostgreSQL, Neo4j - fully simplified)  
 ✅ **Local LLM support** via Ollama (4 models)  
 ✅ **Reputation system** with social learning  
 ✅ **Knowledge graph** with 31 concepts & prerequisites  
@@ -388,7 +387,7 @@ Most active pairs:
 1. **Ollama over Anthropic AI** - Local execution, no API costs, privacy
 2. **Multiple models** - Specialized models for different tasks
 3. **MCP servers** - Extensible tool framework
-4. **Graph + Vector** - Neo4j for relationships, Qdrant for semantic search
+4. **Simplified storage** - Neo4j for relationships, stub vector store (Qdrant removed)
 5. **LangGraph workflows** - Structured multi-agent interactions
 6. **JSON seed data** - Easy to modify, version control friendly
 

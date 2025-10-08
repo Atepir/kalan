@@ -55,21 +55,6 @@ class Settings(BaseSettings):
     neo4j_user: str = Field(default="neo4j", description="Neo4j username")
     neo4j_password: str = Field(default="dev_password", description="Neo4j password")
 
-    # Qdrant Vector Database
-    qdrant_host: str = Field(default="localhost", description="Qdrant host")
-    qdrant_port: int = Field(default=6333, description="Qdrant port")
-    qdrant_api_key: Optional[str] = Field(default=None, description="Qdrant API key")
-    qdrant_collection_name: str = Field(
-        default="research_knowledge",
-        description="Qdrant collection name",
-    )
-
-    # Redis
-    redis_host: str = Field(default="localhost", description="Redis host")
-    redis_port: int = Field(default=6379, description="Redis port")
-    redis_db: int = Field(default=0, description="Redis database number")
-    redis_password: Optional[str] = Field(default=None, description="Redis password")
-
     # Application Settings
     environment: str = Field(default="development", description="Environment: development, staging, production")
     log_level: str = Field(default="INFO", description="Logging level")

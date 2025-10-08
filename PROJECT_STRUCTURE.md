@@ -71,7 +71,7 @@ project-kalan/
 │   │   └── events.py
 │   │
 │   ├── storage/                    # Data persistence
-│   │   ├── vector_store.py         # Qdrant
+│   │   ├── vector_store.py         # Stub (Qdrant removed)
 │   │   ├── graph_store.py          # Neo4j
 │   │   ├── document_store.py       # File system
 │   │   └── state_store.py          # PostgreSQL

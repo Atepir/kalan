@@ -48,40 +48,6 @@ services:
     networks:
       - research-network
 
-  qdrant:
-    image: qdrant/qdrant:latest
-    container_name: research-collective-qdrant
-    volumes:
-      - qdrant_data:/qdrant/storage
-    ports:
-      - "6333:6333"  # HTTP API
-      - "6334:6334"  # gRPC API
-    environment:
-      QDRANT__SERVICE__GRPC_PORT: "6334"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:6333/healthz || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - research-network
-
-  redis:
-    image: redis:7-alpine
-    container_name: research-collective-redis
-    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
-    volumes:
-      - redis_data:/data
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-    networks:
-      - research-network
-
   ollama:
     image: ollama/ollama:latest
     container_name: research-collective-ollama
@@ -117,10 +83,6 @@ volumes:
   neo4j_import:
     driver: local
   neo4j_plugins:
-    driver: local
-  qdrant_data:
-    driver: local
-  redis_data:
     driver: local
   ollama_data:
     driver: local

@@ -5,7 +5,7 @@
 ### 1. Project Configuration Files
 - ✅ `pyproject.toml` - Poetry dependency management with all required packages
 - ✅ `.env.example` - Environment variable template with all configuration options
-- ✅ `docker-compose.yml` - Complete Docker setup for PostgreSQL, Neo4j, Qdrant, and Redis
+- ✅ `docker-compose.yml` - Complete Docker setup for PostgreSQL, Neo4j, and Ollama
 - ✅ `.gitignore` - Comprehensive Python/.gitignore
 - ✅ `README.md` - Full project documentation with architecture diagrams
 
@@ -74,7 +74,7 @@
 
 2. **Storage Layer** (`src/storage/`)
    - `state_store.py` - Agent state persistence (PostgreSQL)
-   - `vector_store.py` - Qdrant integration for embeddings
+   - `vector_store.py` - Stub implementation (Qdrant removed for simplicity)
    - `graph_store.py` - Neo4j integration for knowledge graphs
    - `document_store.py` - Document management
 

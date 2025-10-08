@@ -20,7 +20,7 @@ The MCP (Model Context Protocol) servers provide external interfaces for agents 
 - MCP protocol implementation
 - Tool registration and execution
 - Result formatting for display
-- Auto-stores papers in PostgreSQL and Qdrant
+- Auto-stores papers in PostgreSQL (vector store is stub)
 
 **Key Features**:
 - Integrated with storage layer (auto-saves papers and embeddings)
@@ -134,8 +134,8 @@ Tool(
 ### Integration with Other Layers
 
 **Storage Integration**:
-- Literature server stores papers in PostgreSQL + Qdrant
-- Knowledge server queries from Neo4j + Qdrant
+- Literature server stores papers in PostgreSQL (vector store is stub)
+- Knowledge server queries from Neo4j
 - All use singleton store instances
 
 **LLM Integration**:
@@ -211,7 +211,7 @@ import os  # ValueError: Disallowed import: os
 from src.mcp_servers.literature import search_arxiv
 
 results = await search_arxiv("machine learning", max_results=10)
-# Auto-stored in PostgreSQL + Qdrant
+# Auto-stored in PostgreSQL (vector store is stub)
 
 for paper in results:
     print(f"{paper.title} ({paper.citation_count} citations)")

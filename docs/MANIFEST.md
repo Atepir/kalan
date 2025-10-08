@@ -90,11 +90,11 @@
 ### Source Code - Storage (4 modules)
 | File | Lines | Purpose |
 |------|-------|---------|
-| `src/storage/vector_store.py` | 400 | Qdrant integration |
+| `src/storage/vector_store.py` | 300 | Stub implementation (Qdrant removed) |
 | `src/storage/graph_store.py` | 450 | Neo4j integration |
 | `src/storage/document_store.py` | 400 | File-based storage |
 | `src/storage/state_store.py` | 350 | PostgreSQL integration |
-| **Total** | **1,600** | |
+| **Total** | **1,500** | |
 
 ### Source Code - Utils (3 modules)
 | File | Lines | Purpose |
@@ -199,15 +199,12 @@ Total:           33 modules
 ### Infrastructure (Docker)
 - PostgreSQL 16 + pgvector
 - Neo4j 5.24 Community
-- Qdrant 1.11.0
-- Redis 7
 - Ollama (latest)
-- Adminer 4.8.1
 
 ### Python Dependencies (pyproject.toml)
 - **Core**: Python 3.11+, Pydantic 2.9.0
 - **LLM**: ollama-python, openai (compatible)
-- **Storage**: asyncpg, neo4j, qdrant-client, redis
+- **Storage**: asyncpg, neo4j (qdrant-client and redis removed)
 - **Orchestration**: langgraph, langchain
 - **Tools**: arxiv, scholarly, httpx, tenacity
 - **Utils**: structlog, pyyaml, python-dotenv
