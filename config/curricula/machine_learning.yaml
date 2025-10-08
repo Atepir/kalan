@@ -1,0 +1,243 @@
+# Machine Learning Curriculum
+#
+# Learning path for agents specializing in machine learning
+
+curriculum:
+  name: "Machine Learning Fundamentals"
+  specialization: "machine learning"
+  description: "Core machine learning concepts and techniques"
+  
+  # Learning stages aligned with developmental stages
+  stages:
+    # Apprentice Stage
+    - stage: "apprentice"
+      duration_steps: 50
+      learning_goals:
+        - "Understand basic ML concepts and terminology"
+        - "Learn Python programming for ML"
+        - "Grasp mathematical foundations"
+        - "Read and comprehend introductory papers"
+      
+      topics:
+        - name: "python"
+          priority: "high"
+          depth_target: 2
+          papers:
+            - "Python for Data Science"
+            - "NumPy and Pandas Basics"
+        
+        - name: "statistics"
+          priority: "high"
+          depth_target: 2
+          papers:
+            - "Statistical Learning Theory Introduction"
+            - "Probability and Random Variables"
+        
+        - name: "linear algebra"
+          priority: "high"
+          depth_target: 2
+          papers:
+            - "Linear Algebra for Machine Learning"
+            - "Matrix Operations and Transformations"
+        
+        - name: "machine learning"
+          priority: "medium"
+          depth_target: 1
+          papers:
+            - "Introduction to Machine Learning"
+            - "Supervised vs Unsupervised Learning"
+      
+      activities:
+        - type: "read_papers"
+          frequency: "high"
+          count: 10
+        - type: "seek_help"
+          frequency: "high"
+          count: 5
+        - type: "practice_problems"
+          frequency: "medium"
+          count: 5
+    
+    # Practitioner Stage
+    - stage: "practitioner"
+      duration_steps: 75
+      learning_goals:
+        - "Master core ML algorithms"
+        - "Implement ML models from scratch"
+        - "Understand model evaluation"
+        - "Begin independent research"
+      
+      topics:
+        - name: "supervised learning"
+          priority: "high"
+          depth_target: 3
+          papers:
+            - "Linear Regression and Classification"
+            - "Decision Trees and Random Forests"
+            - "Support Vector Machines"
+        
+        - name: "unsupervised learning"
+          priority: "high"
+          depth_target: 3
+          papers:
+            - "K-Means Clustering"
+            - "Principal Component Analysis"
+            - "Dimensionality Reduction Techniques"
+        
+        - name: "optimization"
+          priority: "high"
+          depth_target: 3
+          papers:
+            - "Gradient Descent Variants"
+            - "Convex Optimization"
+        
+        - name: "model evaluation"
+          priority: "high"
+          depth_target: 3
+          papers:
+            - "Cross-Validation Techniques"
+            - "Bias-Variance Tradeoff"
+            - "Performance Metrics"
+      
+      activities:
+        - type: "read_papers"
+          frequency: "high"
+          count: 15
+        - type: "implement_algorithms"
+          frequency: "high"
+          count: 10
+        - type: "conduct_experiments"
+          frequency: "medium"
+          count: 5
+        - type: "teach_beginners"
+          frequency: "low"
+          count: 2
+    
+    # Teacher Stage
+    - stage: "teacher"
+      duration_steps: 100
+      learning_goals:
+        - "Develop deep expertise in ML subfield"
+        - "Teach and mentor junior agents"
+        - "Conduct independent research"
+        - "Review papers critically"
+      
+      topics:
+        - name: "ensemble methods"
+          priority: "high"
+          depth_target: 4
+          papers:
+            - "Boosting and Bagging"
+            - "Gradient Boosting Machines"
+            - "Stacking and Blending"
+        
+        - name: "feature engineering"
+          priority: "high"
+          depth_target: 4
+          papers:
+            - "Feature Selection Methods"
+            - "Feature Extraction Techniques"
+        
+        - name: "deep learning"
+          priority: "medium"
+          depth_target: 3
+          papers:
+            - "Neural Networks Fundamentals"
+            - "Backpropagation Algorithm"
+        
+        - name: "bayesian methods"
+          priority: "medium"
+          depth_target: 3
+          papers:
+            - "Bayesian Inference"
+            - "Gaussian Processes"
+      
+      activities:
+        - type: "read_papers"
+          frequency: "high"
+          count: 20
+        - type: "teach_students"
+          frequency: "high"
+          count: 10
+        - type: "conduct_experiments"
+          frequency: "high"
+          count: 10
+        - type: "review_papers"
+          frequency: "medium"
+          count: 5
+        - type: "collaborate"
+          frequency: "medium"
+          count: 3
+    
+    # Researcher Stage
+    - stage: "researcher"
+      duration_steps: 150
+      learning_goals:
+        - "Contribute novel research insights"
+        - "Publish research papers"
+        - "Lead collaborative projects"
+        - "Mentor multiple students"
+      
+      topics:
+        - name: "advanced topics"
+          priority: "high"
+          depth_target: 5
+          papers:
+            - "State-of-the-art ML Methods"
+            - "Recent Advances in ML"
+        
+        - name: "meta-learning"
+          priority: "medium"
+          depth_target: 4
+          papers:
+            - "Learning to Learn"
+            - "Few-Shot Learning"
+        
+        - name: "transfer learning"
+          priority: "medium"
+          depth_target: 4
+          papers:
+            - "Domain Adaptation"
+            - "Multi-Task Learning"
+      
+      activities:
+        - type: "read_papers"
+          frequency: "high"
+          count: 30
+        - type: "conduct_experiments"
+          frequency: "high"
+          count: 20
+        - type: "write_papers"
+          frequency: "high"
+          count: 5
+        - type: "review_papers"
+          frequency: "high"
+          count: 10
+        - type: "lead_collaborations"
+          frequency: "high"
+          count: 5
+        - type: "teach_students"
+          frequency: "medium"
+          count: 5
+
+  # Prerequisites for curriculum
+  prerequisites:
+    - "python programming"
+    - "basic mathematics"
+    - "statistics fundamentals"
+  
+  # Recommended resources
+  resources:
+    textbooks:
+      - "Pattern Recognition and Machine Learning (Bishop)"
+      - "Machine Learning: A Probabilistic Perspective (Murphy)"
+      - "The Elements of Statistical Learning (Hastie, Tibshirani, Friedman)"
+    
+    online_courses:
+      - "Stanford CS229: Machine Learning"
+      - "Coursera: Machine Learning (Andrew Ng)"
+    
+    paper_collections:
+      - "arXiv cs.LG"
+      - "NeurIPS proceedings"
+      - "ICML proceedings"

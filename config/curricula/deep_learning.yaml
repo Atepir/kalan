@@ -1,0 +1,262 @@
+# Deep Learning Curriculum
+#
+# Learning path for agents specializing in deep learning
+
+curriculum:
+  name: "Deep Learning Mastery"
+  specialization: "deep learning"
+  description: "Comprehensive deep learning curriculum from basics to advanced topics"
+  
+  stages:
+    # Apprentice Stage
+    - stage: "apprentice"
+      duration_steps: 50
+      learning_goals:
+        - "Understand neural network basics"
+        - "Learn PyTorch/TensorFlow fundamentals"
+        - "Implement simple neural networks"
+        - "Understand backpropagation"
+      
+      topics:
+        - name: "neural networks"
+          priority: "high"
+          depth_target: 2
+          papers:
+            - "Introduction to Neural Networks"
+            - "Perceptrons and Multi-Layer Networks"
+        
+        - name: "backpropagation"
+          priority: "high"
+          depth_target: 2
+          papers:
+            - "Backpropagation Algorithm Explained"
+            - "Chain Rule and Gradient Flow"
+        
+        - name: "activation functions"
+          priority: "medium"
+          depth_target: 2
+          papers:
+            - "ReLU and Variants"
+            - "Sigmoid and Tanh Functions"
+        
+        - name: "gradient descent"
+          priority: "high"
+          depth_target: 2
+          papers:
+            - "Stochastic Gradient Descent"
+            - "Mini-Batch Training"
+      
+      activities:
+        - type: "read_papers"
+          frequency: "high"
+          count: 10
+        - type: "implement_networks"
+          frequency: "high"
+          count: 5
+        - type: "seek_help"
+          frequency: "high"
+          count: 5
+    
+    # Practitioner Stage
+    - stage: "practitioner"
+      duration_steps: 75
+      learning_goals:
+        - "Master CNNs and RNNs"
+        - "Implement modern architectures"
+        - "Understand regularization techniques"
+        - "Train models on real datasets"
+      
+      topics:
+        - name: "convolutional neural networks"
+          priority: "high"
+          depth_target: 3
+          papers:
+            - "ImageNet Classification with Deep CNNs (AlexNet)"
+            - "VGG Networks"
+            - "ResNet: Deep Residual Learning"
+        
+        - name: "recurrent neural networks"
+          priority: "high"
+          depth_target: 3
+          papers:
+            - "LSTMs and GRUs"
+            - "Sequence-to-Sequence Models"
+            - "Attention Mechanisms"
+        
+        - name: "regularization"
+          priority: "high"
+          depth_target: 3
+          papers:
+            - "Dropout for Neural Networks"
+            - "Batch Normalization"
+            - "Weight Decay and L2 Regularization"
+        
+        - name: "optimization"
+          priority: "high"
+          depth_target: 3
+          papers:
+            - "Adam Optimizer"
+            - "Learning Rate Schedules"
+            - "Momentum and RMSprop"
+      
+      activities:
+        - type: "read_papers"
+          frequency: "high"
+          count: 15
+        - type: "implement_architectures"
+          frequency: "high"
+          count: 10
+        - type: "train_models"
+          frequency: "high"
+          count: 10
+        - type: "teach_beginners"
+          frequency: "low"
+          count: 2
+    
+    # Teacher Stage
+    - stage: "teacher"
+      duration_steps: 100
+      learning_goals:
+        - "Master transformer architectures"
+        - "Understand generative models"
+        - "Teach deep learning concepts"
+        - "Conduct research experiments"
+      
+      topics:
+        - name: "transformers"
+          priority: "high"
+          depth_target: 4
+          papers:
+            - "Attention Is All You Need"
+            - "BERT: Pre-training Bidirectional Transformers"
+            - "GPT: Generative Pre-training"
+        
+        - name: "generative models"
+          priority: "high"
+          depth_target: 4
+          papers:
+            - "Generative Adversarial Networks"
+            - "Variational Autoencoders"
+            - "Diffusion Models"
+        
+        - name: "computer vision"
+          priority: "medium"
+          depth_target: 4
+          papers:
+            - "Object Detection (YOLO, Faster R-CNN)"
+            - "Semantic Segmentation"
+            - "Vision Transformers"
+        
+        - name: "natural language processing"
+          priority: "medium"
+          depth_target: 4
+          papers:
+            - "Language Models and Transfer Learning"
+            - "Question Answering Systems"
+            - "Neural Machine Translation"
+      
+      activities:
+        - type: "read_papers"
+          frequency: "high"
+          count: 20
+        - type: "teach_students"
+          frequency: "high"
+          count: 10
+        - type: "implement_sota"
+          frequency: "high"
+          count: 8
+        - type: "review_papers"
+          frequency: "medium"
+          count: 5
+        - type: "collaborate"
+          frequency: "medium"
+          count: 3
+    
+    # Researcher Stage
+    - stage: "researcher"
+      duration_steps: 150
+      learning_goals:
+        - "Develop novel architectures"
+        - "Publish original research"
+        - "Lead research teams"
+        - "Push state-of-the-art"
+      
+      topics:
+        - name: "neural architecture search"
+          priority: "high"
+          depth_target: 5
+          papers:
+            - "AutoML and NAS"
+            - "Efficient Architecture Search"
+        
+        - name: "foundation models"
+          priority: "high"
+          depth_target: 5
+          papers:
+            - "Large Language Models"
+            - "Vision-Language Models"
+            - "Multimodal Transformers"
+        
+        - name: "efficient deep learning"
+          priority: "medium"
+          depth_target: 4
+          papers:
+            - "Model Compression"
+            - "Pruning and Quantization"
+            - "Knowledge Distillation"
+        
+        - name: "self-supervised learning"
+          priority: "high"
+          depth_target: 5
+          papers:
+            - "Contrastive Learning"
+            - "Masked Autoencoders"
+            - "Bootstrap Your Own Latent"
+      
+      activities:
+        - type: "read_papers"
+          frequency: "high"
+          count: 30
+        - type: "conduct_experiments"
+          frequency: "high"
+          count: 20
+        - type: "write_papers"
+          frequency: "high"
+          count: 5
+        - type: "review_papers"
+          frequency: "high"
+          count: 10
+        - type: "lead_collaborations"
+          frequency: "high"
+          count: 5
+        - type: "mentor_researchers"
+          frequency: "medium"
+          count: 3
+
+  prerequisites:
+    - "python programming"
+    - "linear algebra"
+    - "calculus"
+    - "probability and statistics"
+    - "machine learning fundamentals"
+  
+  resources:
+    textbooks:
+      - "Deep Learning (Goodfellow, Bengio, Courville)"
+      - "Dive into Deep Learning (d2l.ai)"
+    
+    online_courses:
+      - "Stanford CS231n: CNNs for Visual Recognition"
+      - "Stanford CS224n: NLP with Deep Learning"
+      - "Fast.ai Practical Deep Learning"
+    
+    frameworks:
+      - "PyTorch"
+      - "TensorFlow/Keras"
+      - "JAX"
+    
+    paper_collections:
+      - "arXiv cs.CV"
+      - "arXiv cs.CL"
+      - "ICLR proceedings"
+      - "NeurIPS proceedings"

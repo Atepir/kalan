@@ -1,0 +1,376 @@
+# Knowledge Graph Configuration
+#
+# Defines the initial concept hierarchy and relationships
+# to bootstrap the research collective's knowledge base.
+
+concepts:
+  # Foundational Concepts
+  - name: "mathematics"
+    category: "foundation"
+    description: "The study of numbers, quantities, shapes, and patterns"
+    difficulty: 1
+
+  - name: "statistics"
+    category: "foundation"
+    description: "Mathematical study of data collection, analysis, and interpretation"
+    difficulty: 1
+
+  - name: "probability"
+    category: "foundation"
+    description: "Mathematical study of uncertainty and randomness"
+    difficulty: 1
+
+  - name: "linear algebra"
+    category: "foundation"
+    description: "Study of vectors, matrices, and linear transformations"
+    difficulty: 1
+
+  - name: "calculus"
+    category: "foundation"
+    description: "Study of continuous change and mathematical analysis"
+    difficulty: 1
+
+  # Core ML Concepts
+  - name: "machine learning"
+    category: "core"
+    description: "Study of algorithms that improve through experience"
+    difficulty: 2
+
+  - name: "supervised learning"
+    category: "paradigm"
+    description: "Learning from labeled training data"
+    difficulty: 2
+
+  - name: "unsupervised learning"
+    category: "paradigm"
+    description: "Finding patterns in unlabeled data"
+    difficulty: 2
+
+  - name: "reinforcement learning"
+    category: "paradigm"
+    description: "Learning through interaction with an environment"
+    difficulty: 3
+
+  - name: "semi-supervised learning"
+    category: "paradigm"
+    description: "Learning from both labeled and unlabeled data"
+    difficulty: 3
+
+  # Deep Learning
+  - name: "deep learning"
+    category: "technique"
+    description: "Neural networks with multiple layers"
+    difficulty: 3
+
+  - name: "neural networks"
+    category: "model"
+    description: "Computing systems inspired by biological neural networks"
+    difficulty: 2
+
+  - name: "convolutional neural networks"
+    category: "model"
+    description: "Neural networks designed for grid-like data (images)"
+    difficulty: 3
+
+  - name: "recurrent neural networks"
+    category: "model"
+    description: "Neural networks for sequential data"
+    difficulty: 3
+
+  - name: "transformers"
+    category: "model"
+    description: "Attention-based neural network architecture"
+    difficulty: 4
+
+  - name: "attention mechanism"
+    category: "technique"
+    description: "Mechanism for models to focus on relevant parts of input"
+    difficulty: 3
+
+  # Optimization
+  - name: "optimization"
+    category: "technique"
+    description: "Finding the best solution from feasible solutions"
+    difficulty: 2
+
+  - name: "gradient descent"
+    category: "algorithm"
+    description: "Iterative optimization algorithm using gradients"
+    difficulty: 2
+
+  - name: "backpropagation"
+    category: "algorithm"
+    description: "Algorithm for computing gradients in neural networks"
+    difficulty: 3
+
+  - name: "stochastic gradient descent"
+    category: "algorithm"
+    description: "Gradient descent with random sampling"
+    difficulty: 2
+
+  - name: "adam optimizer"
+    category: "algorithm"
+    description: "Adaptive moment estimation optimizer"
+    difficulty: 3
+
+  # Regularization
+  - name: "regularization"
+    category: "technique"
+    description: "Techniques to prevent overfitting"
+    difficulty: 2
+
+  - name: "dropout"
+    category: "technique"
+    description: "Randomly dropping units during training"
+    difficulty: 2
+
+  - name: "batch normalization"
+    category: "technique"
+    description: "Normalizing layer inputs"
+    difficulty: 3
+
+  # Applications
+  - name: "natural language processing"
+    category: "application"
+    description: "Processing and understanding human language"
+    difficulty: 3
+
+  - name: "computer vision"
+    category: "application"
+    description: "Enabling computers to understand visual information"
+    difficulty: 3
+
+  - name: "speech recognition"
+    category: "application"
+    description: "Converting speech to text"
+    difficulty: 3
+
+  - name: "recommendation systems"
+    category: "application"
+    description: "Systems that suggest items to users"
+    difficulty: 3
+
+  # Advanced Topics
+  - name: "transfer learning"
+    category: "technique"
+    description: "Applying knowledge from one task to another"
+    difficulty: 4
+
+  - name: "meta-learning"
+    category: "technique"
+    description: "Learning to learn from experience"
+    difficulty: 4
+
+  - name: "few-shot learning"
+    category: "technique"
+    description: "Learning from very few examples"
+    difficulty: 4
+
+  - name: "generative models"
+    category: "model"
+    description: "Models that generate new data samples"
+    difficulty: 4
+
+  - name: "generative adversarial networks"
+    category: "model"
+    description: "Two neural networks competing in a game"
+    difficulty: 4
+
+  - name: "variational autoencoders"
+    category: "model"
+    description: "Generative models using variational inference"
+    difficulty: 4
+
+  - name: "diffusion models"
+    category: "model"
+    description: "Generative models using iterative denoising"
+    difficulty: 4
+
+relationships:
+  # Foundation prerequisites
+  - source: "statistics"
+    target: "machine learning"
+    type: "PREREQUISITE"
+
+  - source: "probability"
+    target: "machine learning"
+    type: "PREREQUISITE"
+
+  - source: "linear algebra"
+    target: "machine learning"
+    type: "PREREQUISITE"
+
+  - source: "calculus"
+    target: "optimization"
+    type: "PREREQUISITE"
+
+  - source: "linear algebra"
+    target: "neural networks"
+    type: "PREREQUISITE"
+
+  # ML paradigm hierarchy
+  - source: "supervised learning"
+    target: "machine learning"
+    type: "IS_A"
+
+  - source: "unsupervised learning"
+    target: "machine learning"
+    type: "IS_A"
+
+  - source: "reinforcement learning"
+    target: "machine learning"
+    type: "IS_A"
+
+  - source: "semi-supervised learning"
+    target: "machine learning"
+    type: "IS_A"
+
+  # Deep learning relationships
+  - source: "deep learning"
+    target: "machine learning"
+    type: "IS_A"
+
+  - source: "neural networks"
+    target: "deep learning"
+    type: "ENABLES"
+
+  - source: "convolutional neural networks"
+    target: "neural networks"
+    type: "IS_A"
+
+  - source: "recurrent neural networks"
+    target: "neural networks"
+    type: "IS_A"
+
+  - source: "transformers"
+    target: "neural networks"
+    type: "IS_A"
+
+  - source: "attention mechanism"
+    target: "transformers"
+    type: "ENABLES"
+
+  # Optimization relationships
+  - source: "optimization"
+    target: "machine learning"
+    type: "ENABLES"
+
+  - source: "gradient descent"
+    target: "optimization"
+    type: "IS_A"
+
+  - source: "stochastic gradient descent"
+    target: "gradient descent"
+    type: "IS_A"
+
+  - source: "adam optimizer"
+    target: "gradient descent"
+    type: "IS_A"
+
+  - source: "backpropagation"
+    target: "neural networks"
+    type: "TRAINS"
+
+  - source: "gradient descent"
+    target: "neural networks"
+    type: "TRAINS"
+
+  # Regularization
+  - source: "regularization"
+    target: "machine learning"
+    type: "IMPROVES"
+
+  - source: "dropout"
+    target: "regularization"
+    type: "IS_A"
+
+  - source: "batch normalization"
+    target: "regularization"
+    type: "IS_A"
+
+  - source: "dropout"
+    target: "neural networks"
+    type: "USED_IN"
+
+  - source: "batch normalization"
+    target: "neural networks"
+    type: "USED_IN"
+
+  # Applications
+  - source: "natural language processing"
+    target: "machine learning"
+    type: "APPLIES"
+
+  - source: "computer vision"
+    target: "machine learning"
+    type: "APPLIES"
+
+  - source: "speech recognition"
+    target: "machine learning"
+    type: "APPLIES"
+
+  - source: "recommendation systems"
+    target: "machine learning"
+    type: "APPLIES"
+
+  - source: "transformers"
+    target: "natural language processing"
+    type: "USED_IN"
+
+  - source: "convolutional neural networks"
+    target: "computer vision"
+    type: "USED_IN"
+
+  - source: "recurrent neural networks"
+    target: "speech recognition"
+    type: "USED_IN"
+
+  # Advanced topics
+  - source: "transfer learning"
+    target: "deep learning"
+    type: "EXTENDS"
+
+  - source: "meta-learning"
+    target: "machine learning"
+    type: "EXTENDS"
+
+  - source: "few-shot learning"
+    target: "meta-learning"
+    type: "IS_A"
+
+  - source: "generative models"
+    target: "machine learning"
+    type: "IS_A"
+
+  - source: "generative adversarial networks"
+    target: "generative models"
+    type: "IS_A"
+
+  - source: "variational autoencoders"
+    target: "generative models"
+    type: "IS_A"
+
+  - source: "diffusion models"
+    target: "generative models"
+    type: "IS_A"
+
+  # Cross-connections
+  - source: "attention mechanism"
+    target: "natural language processing"
+    type: "USED_IN"
+
+  - source: "transfer learning"
+    target: "natural language processing"
+    type: "USED_IN"
+
+  - source: "transfer learning"
+    target: "computer vision"
+    type: "USED_IN"
+
+  - source: "few-shot learning"
+    target: "natural language processing"
+    type: "USED_IN"
+
+  - source: "few-shot learning"
+    target: "computer vision"
+    type: "USED_IN"

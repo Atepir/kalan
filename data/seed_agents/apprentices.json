@@ -1,0 +1,152 @@
+[
+  {
+    "name": "Alice",
+    "stage": "apprentice",
+    "specialization": "machine learning",
+    "model": "llama3.1:8b",
+    "description": "Eager learner focusing on ML fundamentals",
+    "knowledge": [
+      {
+        "topic": "python",
+        "depth": 1,
+        "confidence": 0.7
+      },
+      {
+        "topic": "statistics",
+        "depth": 1,
+        "confidence": 0.6
+      },
+      {
+        "topic": "machine learning",
+        "depth": 1,
+        "confidence": 0.5
+      }
+    ],
+    "reputation": {
+      "score": 1.0,
+      "teaching_count": 0,
+      "review_count": 0,
+      "papers_published": 0
+    }
+  },
+  {
+    "name": "Bob",
+    "stage": "apprentice",
+    "specialization": "natural language processing",
+    "model": "llama3.1:8b",
+    "description": "Beginning NLP researcher with linguistics background",
+    "knowledge": [
+      {
+        "topic": "python",
+        "depth": 1,
+        "confidence": 0.7
+      },
+      {
+        "topic": "linguistics",
+        "depth": 1,
+        "confidence": 0.8
+      },
+      {
+        "topic": "natural language processing",
+        "depth": 1,
+        "confidence": 0.5
+      }
+    ],
+    "reputation": {
+      "score": 1.0,
+      "teaching_count": 0,
+      "review_count": 0,
+      "papers_published": 0
+    }
+  },
+  {
+    "name": "Carol",
+    "stage": "apprentice",
+    "specialization": "computer vision",
+    "model": "phi3:mini",
+    "description": "Visual computing enthusiast learning CV fundamentals",
+    "knowledge": [
+      {
+        "topic": "python",
+        "depth": 1,
+        "confidence": 0.6
+      },
+      {
+        "topic": "image processing",
+        "depth": 1,
+        "confidence": 0.6
+      },
+      {
+        "topic": "computer vision",
+        "depth": 1,
+        "confidence": 0.4
+      }
+    ],
+    "reputation": {
+      "score": 1.0,
+      "teaching_count": 0,
+      "review_count": 0,
+      "papers_published": 0
+    }
+  },
+  {
+    "name": "Dave",
+    "stage": "apprentice",
+    "specialization": "reinforcement learning",
+    "model": "llama3.1:8b",
+    "description": "Game theory enthusiast exploring RL algorithms",
+    "knowledge": [
+      {
+        "topic": "python",
+        "depth": 1,
+        "confidence": 0.7
+      },
+      {
+        "topic": "game theory",
+        "depth": 1,
+        "confidence": 0.6
+      },
+      {
+        "topic": "reinforcement learning",
+        "depth": 1,
+        "confidence": 0.4
+      }
+    ],
+    "reputation": {
+      "score": 1.0,
+      "teaching_count": 0,
+      "review_count": 0,
+      "papers_published": 0
+    }
+  },
+  {
+    "name": "Eve",
+    "stage": "apprentice",
+    "specialization": "optimization",
+    "model": "mistral:7b",
+    "description": "Mathematics background focusing on optimization methods",
+    "knowledge": [
+      {
+        "topic": "python",
+        "depth": 1,
+        "confidence": 0.6
+      },
+      {
+        "topic": "calculus",
+        "depth": 2,
+        "confidence": 0.7
+      },
+      {
+        "topic": "optimization",
+        "depth": 1,
+        "confidence": 0.5
+      }
+    ],
+    "reputation": {
+      "score": 1.0,
+      "teaching_count": 0,
+      "review_count": 0,
+      "papers_published": 0
+    }
+  }
+]

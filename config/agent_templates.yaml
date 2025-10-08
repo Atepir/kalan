@@ -1,0 +1,234 @@
+# Agent Templates Configuration
+#
+# Defines initial agents to seed the community with diverse
+# specializations and developmental stages.
+
+agents:
+  # Apprentice Agents (Beginners)
+  - name: "Alice"
+    stage: "apprentice"
+    specialization: "machine learning"
+    model: "llama3.1:8b"
+    knowledge:
+      - name: "python"
+        depth: 1
+        confidence: 0.6
+      - name: "statistics"
+        depth: 1
+        confidence: 0.5
+    reputation:
+      score: 1.0
+      teaching_count: 0
+      review_count: 0
+
+  - name: "Bob"
+    stage: "apprentice"
+    specialization: "natural language processing"
+    model: "llama3.1:8b"
+    knowledge:
+      - name: "python"
+        depth: 1
+        confidence: 0.7
+      - name: "linguistics"
+        depth: 1
+        confidence: 0.6
+    reputation:
+      score: 1.0
+      teaching_count: 0
+      review_count: 0
+
+  - name: "Carol"
+    stage: "apprentice"
+    specialization: "computer vision"
+    model: "phi3:mini"
+    knowledge:
+      - name: "python"
+        depth: 1
+        confidence: 0.6
+      - name: "image processing"
+        depth: 1
+        confidence: 0.5
+    reputation:
+      score: 1.0
+      teaching_count: 0
+      review_count: 0
+
+  - name: "Dave"
+    stage: "apprentice"
+    specialization: "reinforcement learning"
+    model: "llama3.1:8b"
+    knowledge:
+      - name: "python"
+        depth: 1
+        confidence: 0.7
+      - name: "game theory"
+        depth: 1
+        confidence: 0.4
+    reputation:
+      score: 1.0
+      teaching_count: 0
+      review_count: 0
+
+  - name: "Eve"
+    stage: "apprentice"
+    specialization: "optimization"
+    model: "mistral:7b"
+    knowledge:
+      - name: "python"
+        depth: 1
+        confidence: 0.6
+      - name: "calculus"
+        depth: 1
+        confidence: 0.7
+    reputation:
+      score: 1.0
+      teaching_count: 0
+      review_count: 0
+
+  # Practitioner Agents (Intermediate)
+  - name: "Frank"
+    stage: "practitioner"
+    specialization: "deep learning"
+    model: "llama3.1:8b"
+    knowledge:
+      - name: "neural networks"
+        depth: 2
+        confidence: 0.7
+      - name: "backpropagation"
+        depth: 2
+        confidence: 0.8
+      - name: "gradient descent"
+        depth: 2
+        confidence: 0.7
+    reputation:
+      score: 1.5
+      teaching_count: 2
+      review_count: 0
+
+  - name: "Grace"
+    stage: "practitioner"
+    specialization: "neural networks"
+    model: "mistral:7b"
+    knowledge:
+      - name: "deep learning"
+        depth: 2
+        confidence: 0.7
+      - name: "convolutional networks"
+        depth: 2
+        confidence: 0.6
+      - name: "recurrent networks"
+        depth: 2
+        confidence: 0.6
+    reputation:
+      score: 1.6
+      teaching_count: 3
+      review_count: 1
+
+  - name: "Hank"
+    stage: "practitioner"
+    specialization: "transfer learning"
+    model: "llama3.1:8b"
+    knowledge:
+      - name: "deep learning"
+        depth: 2
+        confidence: 0.8
+      - name: "fine-tuning"
+        depth: 2
+        confidence: 0.7
+      - name: "domain adaptation"
+        depth: 2
+        confidence: 0.6
+    reputation:
+      score: 1.7
+      teaching_count: 3
+      review_count: 1
+
+  # Teacher Agents (Advanced)
+  - name: "Ivy"
+    stage: "teacher"
+    specialization: "machine learning"
+    model: "llama3.1:8b"
+    knowledge:
+      - name: "supervised learning"
+        depth: 3
+        confidence: 0.9
+      - name: "unsupervised learning"
+        depth: 3
+        confidence: 0.8
+      - name: "ensemble methods"
+        depth: 3
+        confidence: 0.8
+      - name: "feature engineering"
+        depth: 3
+        confidence: 0.9
+    reputation:
+      score: 2.5
+      teaching_count: 10
+      review_count: 3
+
+  - name: "Jack"
+    stage: "teacher"
+    specialization: "statistics"
+    model: "mistral:7b"
+    knowledge:
+      - name: "hypothesis testing"
+        depth: 3
+        confidence: 0.9
+      - name: "regression analysis"
+        depth: 3
+        confidence: 0.9
+      - name: "bayesian inference"
+        depth: 3
+        confidence: 0.8
+      - name: "experimental design"
+        depth: 3
+        confidence: 0.8
+    reputation:
+      score: 2.7
+      teaching_count: 12
+      review_count: 5
+
+  # Researcher Agents (Expert-level)
+  - name: "Karen"
+    stage: "researcher"
+    specialization: "meta-learning"
+    model: "llama3.1:8b"
+    knowledge:
+      - name: "few-shot learning"
+        depth: 4
+        confidence: 0.9
+      - name: "neural architecture search"
+        depth: 4
+        confidence: 0.8
+      - name: "transfer learning"
+        depth: 4
+        confidence: 0.9
+      - name: "optimization"
+        depth: 4
+        confidence: 0.8
+    reputation:
+      score: 3.5
+      teaching_count: 15
+      review_count: 10
+
+  - name: "Leo"
+    stage: "researcher"
+    specialization: "generative models"
+    model: "llama3.1:8b"
+    knowledge:
+      - name: "variational autoencoders"
+        depth: 4
+        confidence: 0.9
+      - name: "generative adversarial networks"
+        depth: 4
+        confidence: 0.9
+      - name: "diffusion models"
+        depth: 4
+        confidence: 0.8
+      - name: "autoregressive models"
+        depth: 3
+        confidence: 0.7
+    reputation:
+      score: 3.8
+      teaching_count: 12
+      review_count: 15

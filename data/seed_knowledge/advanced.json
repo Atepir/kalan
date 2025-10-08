@@ -1,0 +1,74 @@
+[
+  {
+    "name": "transfer learning",
+    "category": "technique",
+    "description": "Applying knowledge from one task to another",
+    "difficulty": 4,
+    "keywords": ["fine-tuning", "domain adaptation", "pretrained models"],
+    "prerequisites": ["deep learning"]
+  },
+  {
+    "name": "meta-learning",
+    "category": "technique",
+    "description": "Learning to learn from experience",
+    "difficulty": 4,
+    "keywords": ["learning to learn", "MAML", "few-shot learning"],
+    "prerequisites": ["machine learning", "optimization"]
+  },
+  {
+    "name": "few-shot learning",
+    "category": "technique",
+    "description": "Learning from very few examples",
+    "difficulty": 4,
+    "keywords": ["few-shot", "one-shot", "zero-shot", "prototypical networks"],
+    "prerequisites": ["meta-learning"]
+  },
+  {
+    "name": "generative models",
+    "category": "model",
+    "description": "Models that generate new data samples",
+    "difficulty": 4,
+    "keywords": ["generation", "sampling", "probabilistic models"],
+    "prerequisites": ["deep learning", "probability"]
+  },
+  {
+    "name": "generative adversarial networks",
+    "category": "model",
+    "description": "Two neural networks competing in a game",
+    "difficulty": 4,
+    "keywords": ["GAN", "generator", "discriminator", "adversarial"],
+    "prerequisites": ["generative models", "neural networks"]
+  },
+  {
+    "name": "variational autoencoders",
+    "category": "model",
+    "description": "Generative models using variational inference",
+    "difficulty": 4,
+    "keywords": ["VAE", "encoder", "decoder", "latent space"],
+    "prerequisites": ["generative models", "probability"]
+  },
+  {
+    "name": "diffusion models",
+    "category": "model",
+    "description": "Generative models using iterative denoising",
+    "difficulty": 4,
+    "keywords": ["DDPM", "score-based", "denoising", "diffusion"],
+    "prerequisites": ["generative models"]
+  },
+  {
+    "name": "neural architecture search",
+    "category": "technique",
+    "description": "Automatically searching for optimal neural architectures",
+    "difficulty": 4,
+    "keywords": ["NAS", "AutoML", "architecture optimization"],
+    "prerequisites": ["deep learning", "optimization"]
+  },
+  {
+    "name": "self-supervised learning",
+    "category": "technique",
+    "description": "Learning representations from unlabeled data using pretext tasks",
+    "difficulty": 4,
+    "keywords": ["SSL", "contrastive learning", "pretext tasks"],
+    "prerequisites": ["deep learning"]
+  }
+]

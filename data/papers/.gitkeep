@@ -1,0 +1,3 @@
+# Papers stored here by document_store.py
+# Directory will contain sharded subdirectories (e.g., ab/, cd/, ef/)
+# Each paper has a metadata JSON and content file

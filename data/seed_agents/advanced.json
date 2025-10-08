@@ -1,0 +1,152 @@
+[
+  {
+    "name": "Ivy",
+    "stage": "teacher",
+    "specialization": "machine learning",
+    "model": "llama3.1:8b",
+    "description": "Experienced ML educator and practitioner",
+    "knowledge": [
+      {
+        "topic": "supervised learning",
+        "depth": 3,
+        "confidence": 0.9
+      },
+      {
+        "topic": "unsupervised learning",
+        "depth": 3,
+        "confidence": 0.8
+      },
+      {
+        "topic": "ensemble methods",
+        "depth": 3,
+        "confidence": 0.8
+      },
+      {
+        "topic": "feature engineering",
+        "depth": 3,
+        "confidence": 0.9
+      },
+      {
+        "topic": "model evaluation",
+        "depth": 3,
+        "confidence": 0.9
+      }
+    ],
+    "reputation": {
+      "score": 2.5,
+      "teaching_count": 12,
+      "review_count": 5,
+      "papers_published": 2
+    }
+  },
+  {
+    "name": "Jack",
+    "stage": "teacher",
+    "specialization": "statistics",
+    "model": "mistral:7b",
+    "description": "Statistical methods expert and teacher",
+    "knowledge": [
+      {
+        "topic": "hypothesis testing",
+        "depth": 3,
+        "confidence": 0.9
+      },
+      {
+        "topic": "regression analysis",
+        "depth": 3,
+        "confidence": 0.9
+      },
+      {
+        "topic": "bayesian inference",
+        "depth": 3,
+        "confidence": 0.8
+      },
+      {
+        "topic": "experimental design",
+        "depth": 3,
+        "confidence": 0.8
+      }
+    ],
+    "reputation": {
+      "score": 2.7,
+      "teaching_count": 15,
+      "review_count": 6,
+      "papers_published": 3
+    }
+  },
+  {
+    "name": "Karen",
+    "stage": "researcher",
+    "specialization": "meta-learning",
+    "model": "llama3.1:8b",
+    "description": "Meta-learning researcher pushing boundaries",
+    "knowledge": [
+      {
+        "topic": "few-shot learning",
+        "depth": 4,
+        "confidence": 0.9
+      },
+      {
+        "topic": "neural architecture search",
+        "depth": 4,
+        "confidence": 0.8
+      },
+      {
+        "topic": "transfer learning",
+        "depth": 4,
+        "confidence": 0.9
+      },
+      {
+        "topic": "optimization",
+        "depth": 4,
+        "confidence": 0.8
+      },
+      {
+        "topic": "meta-learning",
+        "depth": 4,
+        "confidence": 0.9
+      }
+    ],
+    "reputation": {
+      "score": 3.5,
+      "teaching_count": 10,
+      "review_count": 12,
+      "papers_published": 8
+    }
+  },
+  {
+    "name": "Leo",
+    "stage": "researcher",
+    "specialization": "generative models",
+    "model": "llama3.1:8b",
+    "description": "Generative modeling research leader",
+    "knowledge": [
+      {
+        "topic": "variational autoencoders",
+        "depth": 4,
+        "confidence": 0.9
+      },
+      {
+        "topic": "generative adversarial networks",
+        "depth": 4,
+        "confidence": 0.9
+      },
+      {
+        "topic": "diffusion models",
+        "depth": 4,
+        "confidence": 0.8
+      },
+      {
+        "topic": "autoregressive models",
+        "depth": 3,
+        "confidence": 0.7
+      }
+    ],
+    "reputation": {
+      "score": 3.8,
+      "teaching_count": 8,
+      "review_count": 18,
+      "papers_published": 12
+    }
+  }
+]

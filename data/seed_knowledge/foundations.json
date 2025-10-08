@@ -1,0 +1,50 @@
+[
+  {
+    "name": "mathematics",
+    "category": "foundation",
+    "description": "The study of numbers, quantities, shapes, and patterns",
+    "difficulty": 1,
+    "keywords": ["math", "mathematics", "quantitative"],
+    "prerequisites": []
+  },
+  {
+    "name": "statistics",
+    "category": "foundation",
+    "description": "Mathematical study of data collection, analysis, and interpretation",
+    "difficulty": 1,
+    "keywords": ["stats", "statistical", "data analysis"],
+    "prerequisites": ["mathematics"]
+  },
+  {
+    "name": "probability",
+    "category": "foundation",
+    "description": "Mathematical study of uncertainty and randomness",
+    "difficulty": 1,
+    "keywords": ["probability theory", "stochastic", "random"],
+    "prerequisites": ["mathematics"]
+  },
+  {
+    "name": "linear algebra",
+    "category": "foundation",
+    "description": "Study of vectors, matrices, and linear transformations",
+    "difficulty": 1,
+    "keywords": ["matrix", "vector", "linear"],
+    "prerequisites": ["mathematics"]
+  },
+  {
+    "name": "calculus",
+    "category": "foundation",
+    "description": "Study of continuous change and mathematical analysis",
+    "difficulty": 1,
+    "keywords": ["derivative", "integral", "differentiation"],
+    "prerequisites": ["mathematics"]
+  },
+  {
+    "name": "python",
+    "category": "foundation",
+    "description": "High-level programming language for ML and data science",
+    "difficulty": 1,
+    "keywords": ["python", "programming", "coding"],
+    "prerequisites": []
+  }
+]

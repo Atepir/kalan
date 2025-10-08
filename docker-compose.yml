@@ -1,0 +1,130 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: research-collective-postgres
+    environment:
+      POSTGRES_DB: research_collective
+      POSTGRES_USER: agent_system
+      POSTGRES_PASSWORD: dev_password
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init_db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agent_system -d research_collective"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - research-network
+
+  neo4j:
+    image: neo4j:5.24-community
+    container_name: research-collective-neo4j
+    environment:
+      NEO4J_AUTH: neo4j/dev_password
+      NEO4J_PLUGINS: '["apoc", "graph-data-science"]'
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*,gds.*"
+      NEO4J_dbms_security_procedures_allowlist: "apoc.*,gds.*"
+      NEO4J_dbms_memory_heap_max__size: "2G"
+      NEO4J_dbms_memory_pagecache_size: "1G"
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/var/lib/neo4j/import
+      - neo4j_plugins:/plugins
+    ports:
+      - "7474:7474"  # HTTP Browser UI
+      - "7687:7687"  # Bolt Protocol
+    healthcheck:
+      test: ["CMD-SHELL", "cypher-shell -u neo4j -p dev_password 'RETURN 1'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - research-network
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: research-collective-qdrant
+    volumes:
+      - qdrant_data:/qdrant/storage
+    ports:
+      - "6333:6333"  # HTTP API
+      - "6334:6334"  # gRPC API
+    environment:
+      QDRANT__SERVICE__GRPC_PORT: "6334"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:6333/healthz || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - research-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: research-collective-redis
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - research-network
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: research-collective-ollama
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - research-network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    # Remove the deploy section if you don't have NVIDIA GPU
+
+volumes:
+  postgres_data:
+    driver: local
+  neo4j_data:
+    driver: local
+  neo4j_logs:
+    driver: local
+  neo4j_import:
+    driver: local
+  neo4j_plugins:
+    driver: local
+  qdrant_data:
+    driver: local
+  redis_data:
+    driver: local
+  ollama_data:
+    driver: local
+
+networks:
+  research-network:
+    driver: bridge

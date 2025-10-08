@@ -1,0 +1,300 @@
+# Evaluation Rubrics Configuration
+#
+# Defines evaluation criteria for different activities and stages
+
+rubrics:
+  # Paper Comprehension Rubric
+  paper_comprehension:
+    name: "Paper Reading and Comprehension"
+    description: "Evaluates agent's understanding of research papers"
+    
+    levels:
+      none:
+        score: 0.0
+        description: "Unable to understand paper content"
+        criteria:
+          - "Cannot identify main contribution"
+          - "Cannot explain methodology"
+          - "Cannot summarize results"
+      
+      minimal:
+        score: 0.25
+        description: "Basic surface-level understanding"
+        criteria:
+          - "Identifies paper topic"
+          - "Recognizes problem being solved"
+          - "Cannot explain technical details"
+      
+      partial:
+        score: 0.5
+        description: "Understands main ideas but struggles with details"
+        criteria:
+          - "Understands main contribution"
+          - "Grasps high-level methodology"
+          - "Struggles with mathematical formulations"
+          - "Cannot evaluate limitations"
+      
+      good:
+        score: 0.75
+        description: "Solid understanding of paper content"
+        criteria:
+          - "Clearly explains contribution"
+          - "Understands methodology in detail"
+          - "Can describe experimental setup"
+          - "Identifies some limitations"
+      
+      excellent:
+        score: 1.0
+        description: "Deep understanding with critical analysis"
+        criteria:
+          - "Comprehends all technical details"
+          - "Can critique methodology"
+          - "Understands broader implications"
+          - "Identifies limitations and future work"
+          - "Can compare with related work"
+  
+  # Teaching Effectiveness Rubric
+  teaching_effectiveness:
+    name: "Teaching and Mentoring Quality"
+    description: "Evaluates effectiveness of teaching activities"
+    
+    dimensions:
+      clarity:
+        weight: 0.3
+        description: "How clear and understandable are explanations"
+        levels:
+          poor: 0.0
+          fair: 0.5
+          good: 0.75
+          excellent: 1.0
+      
+      accuracy:
+        weight: 0.3
+        description: "Correctness of information provided"
+        levels:
+          poor: 0.0
+          fair: 0.5
+          good: 0.75
+          excellent: 1.0
+      
+      engagement:
+        weight: 0.2
+        description: "Ability to engage and motivate student"
+        levels:
+          poor: 0.0
+          fair: 0.5
+          good: 0.75
+          excellent: 1.0
+      
+      adaptation:
+        weight: 0.2
+        description: "Adapts to student's level and needs"
+        levels:
+          poor: 0.0
+          fair: 0.5
+          good: 0.75
+          excellent: 1.0
+    
+    overall_score:
+      calculation: "weighted_average"
+      thresholds:
+        excellent: 0.85
+        good: 0.7
+        fair: 0.5
+        poor: 0.0
+  
+  # Research Quality Rubric
+  research_quality:
+    name: "Research Contribution Quality"
+    description: "Evaluates quality of research work"
+    
+    dimensions:
+      novelty:
+        weight: 0.25
+        description: "Originality and innovation"
+        levels:
+          incremental: 0.5
+          moderate: 0.7
+          significant: 0.85
+          breakthrough: 1.0
+      
+      methodology:
+        weight: 0.25
+        description: "Rigor and appropriateness of methods"
+        levels:
+          flawed: 0.3
+          adequate: 0.6
+          sound: 0.8
+          rigorous: 1.0
+      
+      results:
+        weight: 0.2
+        description: "Quality and significance of results"
+        levels:
+          weak: 0.4
+          moderate: 0.6
+          strong: 0.8
+          compelling: 1.0
+      
+      clarity:
+        weight: 0.15
+        description: "Clarity of presentation"
+        levels:
+          unclear: 0.3
+          acceptable: 0.6
+          clear: 0.8
+          excellent: 1.0
+      
+      impact:
+        weight: 0.15
+        description: "Potential impact on field"
+        levels:
+          limited: 0.4
+          moderate: 0.6
+          high: 0.8
+          transformative: 1.0
+    
+    overall_score:
+      calculation: "weighted_average"
+      thresholds:
+        excellent: 0.85
+        good: 0.7
+        acceptable: 0.5
+        poor: 0.0
+  
+  # Peer Review Quality Rubric
+  peer_review_quality:
+    name: "Peer Review Quality"
+    description: "Evaluates quality of peer review feedback"
+    
+    dimensions:
+      thoroughness:
+        weight: 0.3
+        description: "Completeness of review"
+        criteria:
+          - "Reviews all major aspects"
+          - "Identifies key strengths"
+          - "Identifies key weaknesses"
+          - "Suggests improvements"
+      
+      constructiveness:
+        weight: 0.25
+        description: "Helpfulness of feedback"
+        criteria:
+          - "Provides actionable suggestions"
+          - "Explains reasoning clearly"
+          - "Maintains professional tone"
+      
+      accuracy:
+        weight: 0.25
+        description: "Correctness of assessment"
+        criteria:
+          - "Correctly identifies issues"
+          - "No false positives"
+          - "Fair evaluation of contribution"
+      
+      insight:
+        weight: 0.2
+        description: "Depth of analysis"
+        criteria:
+          - "Goes beyond surface issues"
+          - "Identifies subtle problems"
+          - "Suggests connections to related work"
+    
+    overall_score:
+      calculation: "weighted_average"
+      thresholds:
+        excellent: 0.85
+        good: 0.7
+        acceptable: 0.5
+        poor: 0.0
+  
+  # Experiment Design Rubric
+  experiment_design:
+    name: "Experiment Design Quality"
+    description: "Evaluates quality of experimental design"
+    
+    criteria:
+      hypothesis:
+        weight: 0.2
+        description: "Clear and testable hypothesis"
+        levels:
+          poor: "Vague or untestable"
+          fair: "Somewhat clear but could be more specific"
+          good: "Clear and testable"
+          excellent: "Clear, testable, and well-motivated"
+      
+      methodology:
+        weight: 0.25
+        description: "Appropriate methods for hypothesis testing"
+        levels:
+          poor: "Methods don't match hypothesis"
+          fair: "Methods partially appropriate"
+          good: "Appropriate methods chosen"
+          excellent: "Optimal methods with justification"
+      
+      controls:
+        weight: 0.2
+        description: "Proper controls and baselines"
+        levels:
+          poor: "Missing critical controls"
+          fair: "Basic controls present"
+          good: "Comprehensive controls"
+          excellent: "Thorough controls and ablations"
+      
+      metrics:
+        weight: 0.15
+        description: "Appropriate evaluation metrics"
+        levels:
+          poor: "Inappropriate or missing metrics"
+          fair: "Basic metrics"
+          good: "Comprehensive metrics"
+          excellent: "Well-justified comprehensive metrics"
+      
+      reproducibility:
+        weight: 0.2
+        description: "Design supports reproducibility"
+        levels:
+          poor: "Cannot be reproduced"
+          fair: "Partially reproducible"
+          good: "Fully reproducible with documentation"
+          excellent: "Reproducible with code and data"
+    
+    overall_score:
+      calculation: "weighted_average"
+      thresholds:
+        excellent: 0.85
+        good: 0.7
+        acceptable: 0.5
+        poor: 0.0
+
+# Promotion Thresholds
+promotion_thresholds:
+  apprentice_to_practitioner:
+    papers_read: 10
+    comprehension_avg: 0.6
+    help_received: 3
+    min_reputation: 1.2
+  
+  practitioner_to_teacher:
+    papers_read: 25
+    comprehension_avg: 0.75
+    experiments_conducted: 5
+    papers_reviewed: 2
+    min_reputation: 1.8
+  
+  teacher_to_researcher:
+    papers_read: 50
+    teaching_sessions: 10
+    experiments_conducted: 15
+    papers_written: 2
+    reviews_conducted: 5
+    min_reputation: 2.5
+  
+  researcher_to_expert:
+    papers_written: 10
+    high_quality_papers: 3
+    collaborations_led: 5
+    successful_experiments: 25
+    reviews_conducted: 15
+    min_reputation: 4.0

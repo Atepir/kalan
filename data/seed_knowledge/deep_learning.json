@@ -1,0 +1,74 @@
+[
+  {
+    "name": "deep learning",
+    "category": "technique",
+    "description": "Neural networks with multiple layers",
+    "difficulty": 3,
+    "keywords": ["DL", "deep neural networks", "representation learning"],
+    "prerequisites": ["machine learning", "linear algebra"]
+  },
+  {
+    "name": "neural networks",
+    "category": "model",
+    "description": "Computing systems inspired by biological neural networks",
+    "difficulty": 2,
+    "keywords": ["NN", "artificial neural networks", "neurons"],
+    "prerequisites": ["linear algebra", "calculus"]
+  },
+  {
+    "name": "backpropagation",
+    "category": "algorithm",
+    "description": "Algorithm for computing gradients in neural networks",
+    "difficulty": 3,
+    "keywords": ["backprop", "gradient computation", "chain rule"],
+    "prerequisites": ["neural networks", "calculus"]
+  },
+  {
+    "name": "convolutional neural networks",
+    "category": "model",
+    "description": "Neural networks designed for grid-like data (images)",
+    "difficulty": 3,
+    "keywords": ["CNN", "ConvNet", "convolution", "computer vision"],
+    "prerequisites": ["neural networks"]
+  },
+  {
+    "name": "recurrent neural networks",
+    "category": "model",
+    "description": "Neural networks for sequential data",
+    "difficulty": 3,
+    "keywords": ["RNN", "LSTM", "GRU", "sequence modeling"],
+    "prerequisites": ["neural networks"]
+  },
+  {
+    "name": "transformers",
+    "category": "model",
+    "description": "Attention-based neural network architecture",
+    "difficulty": 4,
+    "keywords": ["attention", "self-attention", "BERT", "GPT"],
+    "prerequisites": ["neural networks", "attention mechanism"]
+  },
+  {
+    "name": "attention mechanism",
+    "category": "technique",
+    "description": "Mechanism for models to focus on relevant parts of input",
+    "difficulty": 3,
+    "keywords": ["attention", "query", "key", "value"],
+    "prerequisites": ["neural networks"]
+  },
+  {
+    "name": "dropout",
+    "category": "technique",
+    "description": "Randomly dropping units during training to prevent overfitting",
+    "difficulty": 2,
+    "keywords": ["regularization", "dropout layer"],
+    "prerequisites": ["neural networks"]
+  },
+  {
+    "name": "batch normalization",
+    "category": "technique",
+    "description": "Normalizing layer inputs to stabilize training",
+    "difficulty": 3,
+    "keywords": ["batchnorm", "normalization", "training stability"],
+    "prerequisites": ["neural networks"]
+  }
+]

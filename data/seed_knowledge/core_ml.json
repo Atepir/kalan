@@ -1,0 +1,58 @@
+[
+  {
+    "name": "machine learning",
+    "category": "core",
+    "description": "Study of algorithms that improve through experience",
+    "difficulty": 2,
+    "keywords": ["ML", "learning algorithms", "pattern recognition"],
+    "prerequisites": ["statistics", "linear algebra", "probability"]
+  },
+  {
+    "name": "supervised learning",
+    "category": "paradigm",
+    "description": "Learning from labeled training data",
+    "difficulty": 2,
+    "keywords": ["classification", "regression", "labeled data"],
+    "prerequisites": ["machine learning"]
+  },
+  {
+    "name": "unsupervised learning",
+    "category": "paradigm",
+    "description": "Finding patterns in unlabeled data",
+    "difficulty": 2,
+    "keywords": ["clustering", "dimensionality reduction", "unlabeled"],
+    "prerequisites": ["machine learning"]
+  },
+  {
+    "name": "reinforcement learning",
+    "category": "paradigm",
+    "description": "Learning through interaction with an environment",
+    "difficulty": 3,
+    "keywords": ["RL", "rewards", "agents", "policy"],
+    "prerequisites": ["machine learning", "probability"]
+  },
+  {
+    "name": "optimization",
+    "category": "technique",
+    "description": "Finding the best solution from feasible solutions",
+    "difficulty": 2,
+    "keywords": ["minimize", "maximize", "objective function"],
+    "prerequisites": ["calculus", "linear algebra"]
+  },
+  {
+    "name": "gradient descent",
+    "category": "algorithm",
+    "description": "Iterative optimization algorithm using gradients",
+    "difficulty": 2,
+    "keywords": ["SGD", "optimization", "gradients"],
+    "prerequisites": ["calculus", "optimization"]
+  },
+  {
+    "name": "regularization",
+    "category": "technique",
+    "description": "Techniques to prevent overfitting",
+    "difficulty": 2,
+    "keywords": ["L1", "L2", "overfitting", "generalization"],
+    "prerequisites": ["machine learning"]
+  }
+]
