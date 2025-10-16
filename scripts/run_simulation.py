@@ -323,7 +323,8 @@ class Simulation:
         agents = await self.community.list_agents(active_only=True)
 
         for agent in agents:
-            success = await self.community.promote_agent(agent.agent_id)
+            from uuid import UUID
+            success = await self.community.promote_agent(UUID(agent.agent_id))
             if success:
                 count += 1
 

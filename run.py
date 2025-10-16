@@ -148,6 +148,32 @@ class MasterRunner:
             print(f"❌ Knowledge seeding failed: {e}")
             return False
 
+    async def cleanup_old_agents(self) -> bool:
+        """
+        Clean up old agents from database before seeding new ones.
+
+        Returns:
+            True if successful
+        """
+        self.print_banner("Cleaning Up Old Agents")
+
+        try:
+            from src.storage.state_store import PostgresStateStore
+
+            state_store = PostgresStateStore()
+            await state_store.connect()
+            
+            count = await state_store.delete_all_agents()
+            print(f"✅ Deleted {count} old agents from database")
+            
+            await state_store.disconnect()
+            return True
+
+        except Exception as e:
+            self.logger.error("agent_cleanup_failed", error=str(e))
+            print(f"❌ Agent cleanup failed: {e}")
+            return False
+
     async def seed_agents(self) -> bool:
         """
         Seed agent community.
@@ -259,6 +285,11 @@ class MasterRunner:
             await analyzer.state_store.connect()
             await analyzer.graph_store.connect()
 
+            # Load agents from database into community
+            self.logger.info("loading_agents_from_database")
+            loaded_count = await analyzer.community.load_agents_from_database()
+            self.logger.info("agents_loaded", count=loaded_count)
+
             # Generate report
             timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
             report_path = Path("reports") / f"community_report_{timestamp}.txt"
@@ -308,17 +339,23 @@ class MasterRunner:
             print("\n❌ Knowledge seeding failed")
             return False
 
-        # Step 3: Seed agents
+        # Step 3: Clean up old agents (unless skipping seed)
+        if not self.skip_seed:
+            if not await self.cleanup_old_agents():
+                print("\n❌ Agent cleanup failed")
+                return False
+
+        # Step 4: Seed agents
         if not await self.seed_agents():
             print("\n❌ Agent seeding failed")
             return False
 
-        # Step 4: Run simulation
+        # Step 5: Run simulation
         if not await self.run_simulation():
             print("\n❌ Simulation failed")
             return False
 
-        # Step 5: Analyze and report
+        # Step 6: Analyze and report
         if not await self.analyze_community():
             print("\n❌ Analysis failed")
             return False

@@ -337,12 +337,13 @@ class CommunityAnalyzer:
         inactive_agents = []
 
         for agent in agents:
-            status = await self.community.get_agent_status(agent.id)
+            from uuid import UUID
+            status = await self.community.get_agent_status(UUID(agent.agent_id))
             if status:
                 # Check if agent has been inactive for too long
                 inactivity = datetime.utcnow() - status.last_activity
                 if inactivity > timedelta(hours=1):
-                    inactive_agents.append(agent.id)
+                    inactive_agents.append(agent.agent_id)
 
         # Calculate diversity (by specialization)
         specializations = community_stats["agents_by_specialization"]
@@ -500,6 +501,11 @@ async def main():
         # Connect to storage
         await analyzer.state_store.connect()
         await analyzer.graph_store.connect()
+
+        # Load agents from database into community
+        logger.info("loading_agents_from_database")
+        loaded_count = await analyzer.community.load_agents_from_database()
+        logger.info("agents_loaded", count=loaded_count)
 
         # Generate report
         report = await analyzer.generate_report(

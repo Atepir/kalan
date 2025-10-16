@@ -106,7 +106,7 @@ class Matchmaker:
         if not matches:
             self.logger.info(
                 "no_suitable_mentors_found",
-                student_id=str(student.id),
+                student_id=str(student.agent_id),
                 topic=topic,
             )
             return None
@@ -118,7 +118,7 @@ class Matchmaker:
 
         self.logger.info(
             "mentor_match_found",
-            student_id=str(student.id),
+            student_id=str(student.agent_id),
             mentor_id=str(best_match.mentor_id),
             topic=topic,
             score=best_match.compatibility_score,
@@ -152,7 +152,7 @@ class Matchmaker:
             Match evaluation or None if unsuitable
         """
         # Check reputation threshold
-        if mentor.reputation.score < criteria.min_mentor_reputation:
+        if mentor.reputation.overall < criteria.min_mentor_reputation:
             return None
 
         # Check specialization if required
@@ -161,12 +161,12 @@ class Matchmaker:
                 return None
 
         # Get mentor's knowledge of topic
-        mentor_knowledge = mentor.knowledge.get_topic_knowledge(topic)
-        mentor_depth = mentor_knowledge.depth if mentor_knowledge else 0
+        mentor_knowledge = mentor.knowledge.get_topic(topic)
+        mentor_depth = mentor_knowledge.depth_score if mentor_knowledge else 0
 
         # Get student's knowledge of topic
-        student_knowledge = student.knowledge.get_topic_knowledge(topic)
-        student_depth = student_knowledge.depth if student_knowledge else 0
+        student_knowledge = student.knowledge.get_topic(topic)
+        student_depth = student_knowledge.depth_score if student_knowledge else 0
 
         # Calculate expertise gap
         expertise_gap = mentor_depth - student_depth
@@ -178,7 +178,7 @@ class Matchmaker:
             return None
 
         # Find shared topics using knowledge graph
-        shared_topics = await self._find_shared_topics(mentor.id, student.id)
+        shared_topics = await self._find_shared_topics(UUID(mentor.agent_id), UUID(student.agent_id))
 
         # Calculate compatibility score
         score = self._calculate_compatibility_score(
@@ -192,13 +192,13 @@ class Matchmaker:
         reasoning = (
             f"Mentor has depth {mentor_depth} on '{topic}' vs student's {student_depth}. "
             f"Expertise gap of {expertise_gap} is optimal for learning. "
-            f"Reputation score: {mentor.reputation.score:.2f}. "
+            f"Reputation score: {mentor.reputation.overall:.2f}. "
             f"Shared topics: {len(shared_topics)}."
         )
 
         return MentorshipMatch(
-            mentor_id=mentor.id,
-            student_id=student.id,
+            mentor_id=UUID(mentor.agent_id),
+            student_id=UUID(student.agent_id),
             compatibility_score=score,
             shared_topics=shared_topics,
             mentor_expertise_level=mentor_depth,
@@ -278,11 +278,11 @@ class Matchmaker:
         score += shared_topic_score
 
         # Reputation score (0-0.2 based on mentor reputation)
-        reputation_score = min(mentor.reputation.score / 5.0, 0.2)
+        reputation_score = min(mentor.reputation.overall / 5.0, 0.2)
         score += reputation_score
 
         # Teaching experience score (from metrics)
-        teaching_count = mentor.reputation.teaching_count
+        teaching_count = mentor.reputation.teaching_sessions
         teaching_score = min(teaching_count * 0.02, 0.1)
         score += teaching_score
 
@@ -312,7 +312,7 @@ class Matchmaker:
         )
 
         # Filter out the requesting agent
-        candidates = [a for a in same_stage_agents if a.id != agent.id]
+        candidates = [a for a in same_stage_agents if a.agent_id != agent.agent_id]
 
         if not candidates:
             return []
@@ -320,19 +320,19 @@ class Matchmaker:
         # Score candidates based on topic knowledge
         scored_candidates = []
         for candidate in candidates:
-            knowledge = candidate.knowledge.get_topic_knowledge(topic)
-            depth = knowledge.depth if knowledge else 0
+            knowledge = candidate.knowledge.get_topic(topic)
+            depth = knowledge.depth_score if knowledge else 0
 
             # Prefer similar knowledge levels
-            agent_knowledge = agent.knowledge.get_topic_knowledge(topic)
-            agent_depth = agent_knowledge.depth if agent_knowledge else 0
+            agent_knowledge = agent.knowledge.get_topic(topic)
+            agent_depth = agent_knowledge.depth_score if agent_knowledge else 0
 
             # Score higher for similar depth (collaboration works best between peers)
             depth_diff = abs(depth - agent_depth)
             score = max(0, 1.0 - (depth_diff * 0.2))
 
             # Boost score based on reputation
-            score += candidate.reputation.score * 0.1
+            score += candidate.reputation.overall * 0.1
 
             scored_candidates.append((candidate, score))
 
@@ -344,7 +344,7 @@ class Matchmaker:
 
         self.logger.info(
             "collaboration_partners_found",
-            agent_id=str(agent.id),
+            agent_id=str(agent.agent_id),
             topic=topic,
             num_partners=len(partners),
         )
@@ -386,7 +386,8 @@ class Matchmaker:
         candidates = researchers + experts
 
         # Filter excluded agents
-        candidates = [c for c in candidates if c.id not in exclude_agent_ids]
+        # Convert agent_id strings to UUIDs for comparison
+        candidates = [c for c in candidates if UUID(c.agent_id) not in exclude_agent_ids]
 
         if not candidates:
             self.logger.warning("no_reviewer_candidates_found", paper_id=paper_id)
@@ -400,19 +401,19 @@ class Matchmaker:
             # Calculate average depth across all paper topics
             depths = []
             for topic in topics:
-                knowledge = candidate.knowledge.get_topic_knowledge(topic)
+                knowledge = candidate.knowledge.get_topic(topic)
                 if knowledge:
-                    depths.append(knowledge.depth)
+                    depths.append(knowledge.depth_score)
 
             if depths:
                 avg_depth = sum(depths) / len(depths)
                 score += avg_depth * 0.4
 
             # Add reputation score
-            score += candidate.reputation.score * 0.3
+            score += candidate.reputation.overall * 0.3
 
             # Boost for review experience
-            score += min(candidate.reputation.review_count * 0.03, 0.3)
+            score += min(candidate.reputation.reviews_completed * 0.03, 0.3)
 
             scored_candidates.append((candidate, score))
 

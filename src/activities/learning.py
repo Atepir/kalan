@@ -407,7 +407,7 @@ Research interests: {', '.join(self.agent.goals[:3]) if self.agent.goals else 'E
         """Get agent's current understanding of a topic."""
         if topic in self.agent.knowledge.topics:
             topic_knowledge = self.agent.knowledge.topics[topic]
-            return f"Depth: {topic_knowledge.depth:.2f}, Confidence: {topic_knowledge.confidence:.2f}"
+            return f"Depth: {topic_knowledge.depth_score:.2f}, Confidence: {topic_knowledge.confidence:.2f}"
         return "No prior knowledge of this topic"
 
     async def _find_available_mentor(self, topic: str) -> Agent | None:

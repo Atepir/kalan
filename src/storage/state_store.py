@@ -379,6 +379,30 @@ class PostgresStateStore(AgentStateStore):
             self.logger.error("list_agents_failed", error=str(e))
             raise
 
+    async def delete_all_agents(self) -> int:
+        """
+        Delete all agents from the database.
+        
+        Returns:
+            Number of agents deleted
+        """
+        if not self.pool:
+            await self.connect()
+
+        try:
+            async with self.pool.acquire() as conn:
+                # Delete all agent records
+                result = await conn.execute("DELETE FROM agents")
+                # Extract count from result like "DELETE 96"
+                count = int(result.split()[-1]) if result and result.split() else 0
+                
+                self.logger.info("all_agents_deleted", count=count)
+                return count
+
+        except Exception as e:
+            self.logger.error("delete_all_agents_failed", error=str(e))
+            raise
+
     async def save_paper(
         self,
         paper_id: str,
