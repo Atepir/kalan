@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
 
-from src.core.agent import Agent, DevelopmentalStage
+from src.core.agent import Agent, AgentStage
 from src.orchestration.community import Community, get_community
 from src.storage.graph_store import get_graph_store
 from src.utils.logging import get_logger
@@ -80,9 +80,9 @@ class Matchmaker:
 
         # Get all potential mentors (must be Teacher or higher)
         eligible_stages = [
-            DevelopmentalStage.TEACHER,
-            DevelopmentalStage.RESEARCHER,
-            DevelopmentalStage.EXPERT,
+            AgentStage.TEACHER,
+            AgentStage.RESEARCHER,
+            AgentStage.EXPERT,
         ]
 
         potential_mentors = []
@@ -375,11 +375,11 @@ class Matchmaker:
 
         # Get agents at Researcher or Expert stages
         researchers = await self.community.list_agents(
-            stage=DevelopmentalStage.RESEARCHER,
+            stage=AgentStage.RESEARCHER,
             active_only=True,
         )
         experts = await self.community.list_agents(
-            stage=DevelopmentalStage.EXPERT,
+            stage=AgentStage.EXPERT,
             active_only=True,
         )
 

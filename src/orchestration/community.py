@@ -13,7 +13,7 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID
 
-from src.core.agent import Agent, DevelopmentalStage
+from src.core.agent import Agent, AgentStage
 from src.orchestration.events import (
     EventType,
     emit_agent_created,
@@ -33,7 +33,7 @@ class AgentStatus:
 
     agent_id: UUID
     name: str
-    stage: DevelopmentalStage
+    stage: AgentStage
     specialization: str
     active: bool
     last_activity: datetime
@@ -69,22 +69,22 @@ class Community:
             agent: Agent to register
         """
         async with self._lock:
-            if agent.id in self.active_agents:
+            if UUID(agent.agent_id) in self.active_agents:
                 self.logger.warning(
                     "agent_already_registered",
-                    agent_id=str(agent.id),
+                    agent_id=agent.agent_id,
                 )
                 return
 
             # Add to active agents
-            self.active_agents[agent.id] = agent
+            self.active_agents[UUID(agent.agent_id)] = agent
 
             # Save to persistent storage
             await self.state_store.save_agent(agent)
 
             self.logger.info(
                 "agent_registered",
-                agent_id=str(agent.id),
+                agent_id=agent.agent_id,
                 name=agent.name,
                 stage=agent.stage.value,
             )
@@ -94,7 +94,7 @@ class Community:
 
             # Emit event
             await emit_agent_created(
-                agent.id,
+                UUID(agent.agent_id),
                 {
                     "name": agent.name,
                     "stage": agent.stage.value,
@@ -154,7 +154,7 @@ class Community:
 
     async def list_agents(
         self,
-        stage: DevelopmentalStage | None = None,
+        stage: AgentStage | None = None,
         specialization: str | None = None,
         active_only: bool = True,
     ) -> list[Agent]:
@@ -228,17 +228,17 @@ class Community:
         )
 
         return AgentStatus(
-            agent_id=agent.id,
+            agent_id=UUID(agent.agent_id),
             name=agent.name,
             stage=agent.stage,
-            specialization=agent.specialization,
+            specialization=agent.specialization or "",
             active=True,
             last_activity=last_activity,
             papers_read=papers_read,
             papers_reviewed=papers_reviewed,
             experiments_run=experiments_run,
             students_taught=students_taught,
-            reputation_score=agent.reputation.score,
+            reputation_score=agent.reputation.overall,
         )
 
     async def promote_agent(self, agent_id: UUID) -> bool:
@@ -259,19 +259,22 @@ class Community:
         old_stage = agent.stage
 
         # Check if agent can be promoted
-        if not agent.can_promote():
+        readiness = agent.assess_readiness_for_promotion()
+        if not readiness["ready"]:
             self.logger.info(
                 "agent_not_ready_for_promotion",
                 agent_id=str(agent_id),
                 stage=agent.stage.value,
+                missing=readiness["missing_requirements"],
             )
             return False
 
         # Promote agent
-        new_stage = agent.promote()
+        new_stage = AgentStage(readiness["next_stage"])
+        agent.promote(new_stage)
 
         # Save updated agent
-        await self.state_store.update_agent_stage(agent.id, new_stage)
+        await self.state_store.update_agent_stage(UUID(agent.agent_id), new_stage)
 
         self.logger.info(
             "agent_promoted",
@@ -303,7 +306,7 @@ class Community:
 
         # Count by stage
         stage_counts = {}
-        for stage in DevelopmentalStage:
+        for stage in AgentStage:
             count = sum(1 for a in agents if a.stage == stage)
             stage_counts[stage.value] = count
 
@@ -322,7 +325,7 @@ class Community:
             "agents_by_stage": stage_counts,
             "agents_by_specialization": specialization_counts,
             "avg_reputation": (
-                sum(a.reputation.score for a in agents) / len(agents) if agents else 0.0
+                sum(a.reputation.overall for a in agents) / len(agents) if agents else 0.0
             ),
             "event_stats": event_stats,
         }

@@ -15,7 +15,7 @@ from src.activities.learning import LearningActivity
 from src.activities.research import ResearchActivity
 from src.activities.review import ReviewActivity
 from src.activities.teaching import TeachingActivity
-from src.core.agent import Agent, DevelopmentalStage
+from src.core.agent import Agent, AgentStage
 from src.orchestration.community import get_community
 from src.orchestration.events import EventType, get_event_bus
 from src.orchestration.matchmaking import Matchmaker
@@ -163,14 +163,14 @@ class Simulation:
         for agent in agents:
             # Apprentices and Practitioners primarily learn
             if agent.stage in [
-                DevelopmentalStage.APPRENTICE,
-                DevelopmentalStage.PRACTITIONER,
+                AgentStage.APPRENTICE,
+                AgentStage.PRACTITIONER,
             ]:
                 if random.random() < self.config.learning_probability:
                     tasks.append(self._learning_task(agent, stats))
 
             # Teachers teach and research
-            if agent.stage == DevelopmentalStage.TEACHER:
+            if agent.stage == AgentStage.TEACHER:
                 if random.random() < self.config.teaching_probability:
                     tasks.append(self._teaching_task(agent, stats))
                 if random.random() < self.config.research_probability:
@@ -178,8 +178,8 @@ class Simulation:
 
             # Researchers and Experts focus on research
             if agent.stage in [
-                DevelopmentalStage.RESEARCHER,
-                DevelopmentalStage.EXPERT,
+                AgentStage.RESEARCHER,
+                AgentStage.EXPERT,
             ]:
                 if random.random() < self.config.research_probability:
                     tasks.append(self._research_task(agent, stats))
@@ -242,7 +242,7 @@ class Simulation:
         try:
             # Find a student who needs help
             students = await self.community.list_agents(
-                stage=DevelopmentalStage.APPRENTICE,
+                stage=AgentStage.APPRENTICE,
                 active_only=True,
             )
 

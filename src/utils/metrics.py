@@ -312,6 +312,31 @@ def get_metrics_collector() -> MetricsCollector:
     return _metrics_collector
 
 
+def record_metric(
+    metric_name: str,
+    value: float = 1.0,
+    metadata: Optional[dict[str, Any]] = None,
+    agent_id: Optional[str] = None,
+) -> None:
+    """
+    Record a metric value.
+
+    Args:
+        metric_name: Name of the metric to record
+        value: Value to record (default 1.0 for counters)
+        metadata: Optional metadata dictionary
+        agent_id: Optional agent ID for agent-specific tracking
+    """
+    collector = get_metrics_collector()
+    collector.record_activity(
+        activity_type=metric_name,
+        duration_seconds=value,
+        success=True,
+        agent_id=agent_id,
+        metadata=metadata,
+    )
+
+
 @contextmanager
 def track_activity(
     activity_type: str,

@@ -110,7 +110,17 @@ class PostgresStateStore(AgentStateStore):
     async def connect(self) -> None:
         """Establish connection pool to PostgreSQL."""
         if self.pool is not None:
-            return
+            # Check if pool is still usable
+            try:
+                async with self.pool.acquire() as conn:
+                    await conn.fetchval("SELECT 1")
+                self.logger.info("postgres_connection_already_established")
+                return
+            except Exception:
+                # Pool is stale, close it and reconnect
+                self.logger.warning("postgres_pool_stale_reconnecting")
+                await self.pool.close()
+                self.pool = None
 
         try:
             self.pool = await asyncpg.create_pool(
@@ -118,6 +128,8 @@ class PostgresStateStore(AgentStateStore):
                 min_size=5,
                 max_size=20,
                 command_timeout=60,
+                ssl=False,  # Disable SSL for local Docker connections
+                server_settings={'jit': 'off'}
             )
             self.logger.info("postgres_connection_established")
         except Exception as e:
@@ -147,31 +159,29 @@ class PostgresStateStore(AgentStateStore):
                 await conn.execute(
                     """
                     INSERT INTO agents (
-                        id, name, stage, specialization, goals,
+                        agent_id, name, stage, specialization,
                         reputation_teaching, reputation_research,
                         reputation_review, reputation_collaboration,
-                        created_at, updated_at
-                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-                    ON CONFLICT (id) DO UPDATE SET
+                        created_at, last_active
+                    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                    ON CONFLICT (agent_id) DO UPDATE SET
                         name = EXCLUDED.name,
                         stage = EXCLUDED.stage,
                         specialization = EXCLUDED.specialization,
-                        goals = EXCLUDED.goals,
                         reputation_teaching = EXCLUDED.reputation_teaching,
                         reputation_research = EXCLUDED.reputation_research,
                         reputation_review = EXCLUDED.reputation_review,
                         reputation_collaboration = EXCLUDED.reputation_collaboration,
-                        updated_at = EXCLUDED.updated_at
+                        last_active = EXCLUDED.last_active
                     """,
-                    agent.id,
+                    agent.agent_id,
                     agent.name,
                     agent.stage.value,
                     agent.specialization or "",
-                    json.dumps(agent.goals),
-                    agent.reputation.teaching_score,
-                    agent.reputation.research_score,
-                    agent.reputation.review_score,
-                    agent.reputation.collaboration_score,
+                    agent.reputation.teaching,
+                    agent.reputation.research,
+                    agent.reputation.review,
+                    agent.reputation.collaboration,
                     agent.created_at,
                     datetime.utcnow(),
                 )
@@ -181,29 +191,37 @@ class PostgresStateStore(AgentStateStore):
                     await conn.execute(
                         """
                         INSERT INTO knowledge_topics (
-                            agent_id, topic, depth, breadth, confidence,
-                            last_accessed, times_used
-                        ) VALUES ($1, $2, $3, $4, $5, $6, $7)
-                        ON CONFLICT (agent_id, topic) DO UPDATE SET
-                            depth = EXCLUDED.depth,
-                            breadth = EXCLUDED.breadth,
+                            topic_id, agent_id, name, depth_score, breadth_score, confidence,
+                            last_accessed, validated, validation_count
+                        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                        ON CONFLICT (agent_id, name) DO UPDATE SET
+                            depth_score = EXCLUDED.depth_score,
+                            breadth_score = EXCLUDED.breadth_score,
                             confidence = EXCLUDED.confidence,
                             last_accessed = EXCLUDED.last_accessed,
-                            times_used = EXCLUDED.times_used
+                            validated = EXCLUDED.validated,
+                            validation_count = EXCLUDED.validation_count
                         """,
-                        agent.id,
+                        topic_knowledge.topic_id,
+                        agent.agent_id,
                         topic_name,
-                        topic_knowledge.depth,
-                        topic_knowledge.breadth,
+                        topic_knowledge.depth_score,
+                        topic_knowledge.breadth_score,
                         topic_knowledge.confidence,
                         topic_knowledge.last_accessed,
-                        topic_knowledge.times_used,
+                        topic_knowledge.validated,
+                        topic_knowledge.validation_count,
                     )
 
-            self.logger.info("agent_saved", agent_id=str(agent.id))
+            self.logger.info("agent_saved", agent_id=agent.agent_id)
 
         except Exception as e:
-            self.logger.error("agent_save_failed", agent_id=str(agent.id), error=str(e))
+            self.logger.error("agent_save_failed", agent_id=agent.agent_id, error=str(e))
+            # If connection error, try to reconnect
+            if "connection" in str(e).lower():
+                self.logger.warning("connection_error_reconnecting")
+                self.pool = None
+                await self.connect()
             raise
 
     async def load_agent(self, agent_id: UUID) -> Agent | None:

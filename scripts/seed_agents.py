@@ -11,7 +11,7 @@ from uuid import uuid4
 
 import yaml
 
-from src.core.agent import Agent, DevelopmentalStage
+from src.core.agent import Agent, AgentStage
 from src.orchestration.community import get_community
 from src.storage.state_store import get_state_store
 from src.utils.config import get_settings
@@ -50,28 +50,37 @@ async def create_agent_from_template(template: dict) -> Agent:
         Created Agent instance
     """
     agent = Agent(
-        id=uuid4(),
         name=template["name"],
-        stage=DevelopmentalStage(template["stage"]),
+        stage=AgentStage(template["stage"]),
         specialization=template["specialization"],
-        model_preference=template.get("model", "llama3.1:8b"),
     )
 
     # Add initial knowledge if specified
     initial_knowledge = template.get("knowledge", [])
     for topic_data in initial_knowledge:
+        # Normalize depth to 0-1 range (divide by 5 if it's in 1-5 scale)
+        depth = topic_data.get("depth", 0.1)
+        if depth > 1.0:
+            depth = depth / 5.0  # Convert 1-5 scale to 0.2-1.0
+        
         agent.knowledge.add_topic(
             name=topic_data["name"],
-            depth=topic_data.get("depth", 1),
+            depth_score=min(depth, 1.0),  # Ensure it's <= 1.0
             confidence=topic_data.get("confidence", 0.5),
         )
 
     # Set initial reputation if specified
     if "reputation" in template:
         rep_data = template["reputation"]
-        agent.reputation.score = rep_data.get("score", 1.0)
-        agent.reputation.teaching_count = rep_data.get("teaching_count", 0)
-        agent.reputation.review_count = rep_data.get("review_count", 0)
+        # Note: ReputationScore doesn't have a 'score' field, it has dimensions
+        # Set initial values for reputation dimensions if provided
+        if "teaching" in rep_data:
+            agent.reputation.teaching = rep_data["teaching"]
+        if "research" in rep_data:
+            agent.reputation.research = rep_data["research"]
+        agent.reputation.teaching_sessions = rep_data.get("teaching_count", 0)
+        agent.reputation.reviews_completed = rep_data.get("review_count", 0)
+        agent.reputation.papers_published = rep_data.get("papers_published", 0)
 
     return agent
 
@@ -119,7 +128,7 @@ async def seed_agents(num_agents: int | None = None) -> list[Agent]:
 
             logger.info(
                 "agent_created",
-                agent_id=str(agent.id),
+                agent_id=str(agent.agent_id),
                 name=agent.name,
                 stage=agent.stage.value,
                 specialization=agent.specialization,
@@ -177,13 +186,13 @@ async def seed_default_agents() -> list[Agent]:
     for i, (name, specialization) in enumerate(default_specs):
         # Determine stage based on index
         if i < 5:
-            stage = DevelopmentalStage.APPRENTICE
+            stage = AgentStage.APPRENTICE
         elif i < 8:
-            stage = DevelopmentalStage.PRACTITIONER
+            stage = AgentStage.PRACTITIONER
         elif i < 10:
-            stage = DevelopmentalStage.TEACHER
+            stage = AgentStage.TEACHER
         else:
-            stage = DevelopmentalStage.RESEARCHER
+            stage = AgentStage.RESEARCHER
 
         agent = Agent(
             name=name,
@@ -194,8 +203,8 @@ async def seed_default_agents() -> list[Agent]:
         # Add some initial knowledge
         topics = [specialization, "python", "research methods"]
         for topic in topics:
-            depth = 3 if stage in [DevelopmentalStage.TEACHER, DevelopmentalStage.RESEARCHER] else 1
-            agent.knowledge.add_topic(topic, depth=depth, confidence=0.7)
+            depth_score = 0.7 if stage in [AgentStage.TEACHER, AgentStage.RESEARCHER] else 0.3
+            agent.knowledge.add_topic(topic, depth_score=depth_score, confidence=0.7)
 
         await community.register_agent(agent)
         agents.append(agent)
@@ -224,22 +233,22 @@ async def print_agent_summary(agents: list[Agent]) -> None:
     print("=" * 60)
 
     # Group by stage
-    by_stage: dict[DevelopmentalStage, list[Agent]] = {}
+    by_stage: dict[AgentStage, list[Agent]] = {}
     for agent in agents:
         if agent.stage not in by_stage:
             by_stage[agent.stage] = []
         by_stage[agent.stage].append(agent)
 
     # Print by stage
-    for stage in DevelopmentalStage:
+    for stage in AgentStage:
         if stage in by_stage:
             stage_agents = by_stage[stage]
             print(f"\n{stage.value.upper()} ({len(stage_agents)} agents):")
             for agent in stage_agents:
-                topics = ", ".join([t.name for t in agent.knowledge.topics[:3]])
+                topics = ", ".join(list(agent.knowledge.topics.keys())[:3])
                 print(f"  - {agent.name} ({agent.specialization})")
                 print(f"    Topics: {topics}")
-                print(f"    Reputation: {agent.reputation.score:.2f}")
+                print(f"    Reputation: {agent.reputation.overall:.2f}")
 
     print("\n" + "=" * 60)
     print(f"TOTAL: {len(agents)} agents")

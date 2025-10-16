@@ -114,8 +114,8 @@ async def create_concept_relationships(
 
         # Create relationship
         await graph_store.create_relationship(
-            source_id=concept_ids[source],
-            target_id=concept_ids[target],
+            from_node_id=concept_ids[source],
+            to_node_id=concept_ids[target],
             relationship_type=rel_type,
             properties=rel_data.get("properties", {}),
         )
