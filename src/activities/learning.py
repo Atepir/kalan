@@ -12,6 +12,7 @@ from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING
 
+from src.core.knowledge import KnowledgeSource
 from src.llm import LLMTools, PromptTemplates, get_ollama_client
 from src.utils.logging import get_logger
 from src.utils.metrics import MetricsCollector
@@ -134,9 +135,10 @@ class LearningActivity:
                 temperature=0.7,
             )
 
-            # Parse response
+            # Parse response - extract content from dict
+            response_text = response if isinstance(response, str) else response.get("content", "")
             summary, concepts, questions, confidence = self._parse_comprehension_response(
-                response
+                response_text
             )
 
             # Determine comprehension level
@@ -160,13 +162,17 @@ class LearningActivity:
             # Update agent's knowledge
             await self._update_knowledge_from_paper(result)
 
+            # Add paper to agent's reading history
+            if paper_id not in self.agent.papers_read:
+                self.agent.papers_read.append(paper_id)
+
             # Track metrics
-            self.metrics.track_activity(
+            self.metrics.record_activity(
+                activity_type="read_paper",
+                duration_seconds=reading_time * 60,
+                success=True,
                 agent_id=str(self.agent.agent_id),
-                activity_type="learning",
-                activity_name="read_paper",
-                outcome="success",
-                details={
+                metadata={
                     "paper_id": paper_id,
                     "comprehension_level": comprehension_level.value,
                     "confidence": confidence,
@@ -188,12 +194,12 @@ class LearningActivity:
                 paper_id=paper_id,
                 error=str(e),
             )
-            self.metrics.track_activity(
+            self.metrics.record_activity(
+                activity_type="read_paper",
+                duration_seconds=0.0,
+                success=False,
                 agent_id=str(self.agent.agent_id),
-                activity_type="learning",
-                activity_name="read_paper",
-                outcome="error",
-                details={"error": str(e)},
+                metadata={"error": str(e)},
             )
             raise ValueError(f"Failed to read paper: {e}") from e
 
@@ -322,10 +328,11 @@ class LearningActivity:
     def _build_background_context(self) -> str:
         """Build context about agent's background and knowledge."""
         topics = list(self.agent.knowledge.topics.keys())[:10]
+        goals = [g.description for g in self.agent.current_goals[:3]] if self.agent.current_goals else []
         return f"""
 Stage: {self.agent.stage.value}
 Known topics: {', '.join(topics) if topics else 'No prior knowledge'}
-Research interests: {', '.join(self.agent.goals[:3]) if self.agent.goals else 'Exploring'}
+Research interests: {', '.join(goals) if goals else 'Exploring'}
         """.strip()
 
     def _parse_comprehension_response(
@@ -384,13 +391,36 @@ Research interests: {', '.join(self.agent.goals[:3]) if self.agent.goals else 'E
             confidence_delta = result.confidence / 100.0
             depth_delta = 0.1 * confidence_delta  # Modest depth increase
 
-            self.agent.knowledge.update_topic_knowledge(
-                topic=concept,
-                depth_change=depth_delta,
-                confidence_change=confidence_delta,
-                source_type="paper",
-                source_id=result.paper_id,
-            )
+            # Check if topic exists, create if not
+            topic = self.agent.knowledge.get_topic(concept)
+            if not topic:
+                # Create new topic with initial values
+                self.agent.knowledge.add_topic(
+                    name=concept,
+                    depth_score=depth_delta,
+                    confidence=confidence_delta,
+                )
+                # Add source for the new topic
+                if topic := self.agent.knowledge.get_topic(concept):
+                    topic.add_source(
+                        KnowledgeSource(
+                            source_type="paper",
+                            source_id=result.paper_id,
+                            relevance_score=confidence_delta,
+                        )
+                    )
+            else:
+                # Update existing topic
+                self.agent.knowledge.update_topic(
+                    name=concept,
+                    depth_delta=depth_delta,
+                    confidence_delta=confidence_delta,
+                    add_source=KnowledgeSource(
+                        source_type="paper",
+                        source_id=result.paper_id,
+                        relevance_score=confidence_delta,
+                    ),
+                )
 
     def _parse_self_assessment(self, response: str) -> dict[str, any]:
         """Parse self-assessment response."""

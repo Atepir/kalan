@@ -55,6 +55,44 @@ async def create_agent_from_template(template: dict) -> Agent:
         specialization=template["specialization"],
     )
 
+    # Set capabilities based on stage (important: agents created at higher stages need proper capabilities)
+    stage_configs = {
+        AgentStage.APPRENTICE: {
+            "can_teach": False,
+            "can_conduct_research": False,
+            "can_review_papers": False,
+            "requires_mentor": True,
+        },
+        AgentStage.PRACTITIONER: {
+            "can_teach": False,
+            "can_conduct_research": False,
+            "can_review_papers": False,
+            "requires_mentor": True,
+        },
+        AgentStage.TEACHER: {
+            "can_teach": True,
+            "can_conduct_research": True,
+            "can_review_papers": False,
+            "requires_mentor": False,
+        },
+        AgentStage.RESEARCHER: {
+            "can_teach": True,
+            "can_conduct_research": True,
+            "can_review_papers": True,
+            "requires_mentor": False,
+        },
+        AgentStage.EXPERT: {
+            "can_teach": True,
+            "can_conduct_research": True,
+            "can_review_papers": True,
+            "requires_mentor": False,
+        },
+    }
+    
+    config = stage_configs.get(agent.stage, {})
+    for key, value in config.items():
+        setattr(agent, key, value)
+
     # Add initial knowledge if specified
     initial_knowledge = template.get("knowledge", [])
     for topic_data in initial_knowledge:
@@ -199,6 +237,44 @@ async def seed_default_agents() -> list[Agent]:
             stage=stage,
             specialization=specialization,
         )
+
+        # Set capabilities based on stage (important: agents created at higher stages need proper capabilities)
+        stage_configs = {
+            AgentStage.APPRENTICE: {
+                "can_teach": False,
+                "can_conduct_research": False,
+                "can_review_papers": False,
+                "requires_mentor": True,
+            },
+            AgentStage.PRACTITIONER: {
+                "can_teach": False,
+                "can_conduct_research": False,
+                "can_review_papers": False,
+                "requires_mentor": True,
+            },
+            AgentStage.TEACHER: {
+                "can_teach": True,
+                "can_conduct_research": True,
+                "can_review_papers": False,
+                "requires_mentor": False,
+            },
+            AgentStage.RESEARCHER: {
+                "can_teach": True,
+                "can_conduct_research": True,
+                "can_review_papers": True,
+                "requires_mentor": False,
+            },
+            AgentStage.EXPERT: {
+                "can_teach": True,
+                "can_conduct_research": True,
+                "can_review_papers": True,
+                "requires_mentor": False,
+            },
+        }
+        
+        config = stage_configs.get(stage, {})
+        for key, value in config.items():
+            setattr(agent, key, value)
 
         # Add some initial knowledge
         topics = [specialization, "python", "research methods"]

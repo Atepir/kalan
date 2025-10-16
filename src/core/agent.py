@@ -13,7 +13,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, model_validator
 
 from src.core.knowledge import KnowledgeGraph
 from src.core.reputation import ReputationScore
@@ -154,6 +154,56 @@ class Agent(BaseModel):
     can_conduct_research: bool = False
     can_review_papers: bool = False
 
+    @model_validator(mode='after')
+    def set_capabilities_from_stage(self) -> 'Agent':
+        """
+        Automatically set agent capabilities based on their developmental stage.
+        This ensures agents created at higher stages have the proper capabilities.
+        """
+        stage_configs = {
+            AgentStage.APPRENTICE: {
+                "can_teach": False,
+                "can_conduct_research": False,
+                "can_review_papers": False,
+                "requires_mentor": True,
+                "max_concurrent_activities": 2,
+            },
+            AgentStage.PRACTITIONER: {
+                "can_teach": False,
+                "can_conduct_research": False,
+                "can_review_papers": False,
+                "requires_mentor": True,
+                "max_concurrent_activities": 4,
+            },
+            AgentStage.TEACHER: {
+                "can_teach": True,
+                "can_conduct_research": True,
+                "can_review_papers": False,
+                "requires_mentor": False,
+                "max_concurrent_activities": 6,
+            },
+            AgentStage.RESEARCHER: {
+                "can_teach": True,
+                "can_conduct_research": True,
+                "can_review_papers": True,
+                "requires_mentor": False,
+                "max_concurrent_activities": 8,
+            },
+            AgentStage.EXPERT: {
+                "can_teach": True,
+                "can_conduct_research": True,
+                "can_review_papers": True,
+                "requires_mentor": False,
+                "max_concurrent_activities": 10,
+            },
+        }
+        
+        config = stage_configs.get(self.stage, {})
+        for key, value in config.items():
+            setattr(self, key, value)
+        
+        return self
+
     def add_experience(
         self,
         activity_type: str,
@@ -284,7 +334,9 @@ class Agent(BaseModel):
         depth_ok = avg_depth >= criteria.min_knowledge_depth
         criteria_met["knowledge_depth"] = depth_ok
         if not depth_ok:
-            missing.append(f"Increase knowledge depth to {criteria.min_knowledge_depth}")
+            missing.append(
+                f"Increase knowledge depth to {criteria.min_knowledge_depth} (current: {avg_depth:.2f})"
+            )
 
         # Check teaching (if required)
         if criteria.min_students_taught > 0:
@@ -331,15 +383,24 @@ class Agent(BaseModel):
 
         # Update capabilities based on stage
         stage_configs = {
+            AgentStage.APPRENTICE: {
+                "can_teach": False,
+                "can_conduct_research": False,
+                "can_review_papers": False,
+                "max_concurrent_activities": 2,
+                "requires_mentor": True,
+            },
             AgentStage.PRACTITIONER: {
                 "can_teach": False,
                 "can_conduct_research": False,
+                "can_review_papers": False,
                 "max_concurrent_activities": 4,
                 "requires_mentor": True,
             },
             AgentStage.TEACHER: {
                 "can_teach": True,
                 "can_conduct_research": True,
+                "can_review_papers": False,
                 "max_concurrent_activities": 6,
                 "requires_mentor": False,
             },

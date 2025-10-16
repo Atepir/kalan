@@ -96,3 +96,5 @@ poetry.lock
 
 # Alembic
 alembic/versions/*.pyc
+
+data/papers

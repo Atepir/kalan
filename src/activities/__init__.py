@@ -16,9 +16,11 @@ from src.activities.research import (
     ExperimentResult,
     HypothesisEvaluation,
     ResearchActivity,
+    ResearchPaper,
     conduct_experiment,
     generate_hypothesis,
     review_literature,
+    write_paper,
 )
 from src.activities.review import (
     PeerReview,
@@ -52,9 +54,11 @@ __all__ = [
     "ResearchActivity",
     "HypothesisEvaluation",
     "ExperimentResult",
+    "ResearchPaper",
     "review_literature",
     "generate_hypothesis",
     "conduct_experiment",
+    "write_paper",
     # Review
     "ReviewActivity",
     "PeerReview",

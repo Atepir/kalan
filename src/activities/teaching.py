@@ -211,8 +211,8 @@ class TeachingActivity:
             timestamp=datetime.utcnow(),
         )
 
-        # Update teacher's reputation
-        await self._record_teaching_session(session)
+        # Update mentorship relationship
+        await self._record_teaching_session(session, student, understanding_check.get("score", 0.75))
 
         # Track metrics
         self.metrics.track_activity(
@@ -287,10 +287,11 @@ class TeachingActivity:
     def _build_student_background(self, student: Agent) -> str:
         """Build description of student's background."""
         topics = list(student.knowledge.topics.keys())[:10]
+        goals = [g.description for g in student.current_goals[:3]] if student.current_goals else []
         return f"""
 Stage: {student.stage.value}
 Known topics: {', '.join(topics) if topics else 'New to research'}
-Learning goals: {', '.join(student.goals[:3]) if student.goals else 'Exploring'}
+Learning goals: {', '.join(goals) if goals else 'Exploring'}
         """.strip()
 
     async def _get_student_questions(
@@ -357,11 +358,62 @@ Learning goals: {', '.join(student.goals[:3]) if student.goals else 'Exploring'}
             next_steps=["Practice with more examples"],
         )
 
-    async def _record_teaching_session(self, session: TeachingSession) -> None:
-        """Record teaching session in database."""
-        # TODO: Store in database
-        # Update agent's experience and reputation
-        pass
+    async def _record_teaching_session(
+        self, 
+        session: TeachingSession, 
+        student: Agent,
+        understanding_score: float
+    ) -> None:
+        """Record teaching session and update mentorship relationship."""
+        # Find the mentorship relationship between teacher and student
+        mentorship = None
+        for relation in self.agent.students:
+            if relation.student_id == str(student.agent_id) and relation.is_active:
+                mentorship = relation
+                break
+        
+        # If no mentorship exists, create one
+        if not mentorship:
+            mentorship = self.agent.add_student(
+                student_id=str(student.agent_id),
+                topics=[session.topic]
+            )
+        
+        # Update session count
+        mentorship.sessions_count += 1
+        
+        # Update student progress (weighted average with new understanding score)
+        # Convert understanding_score (0-1) to 0-100 scale
+        new_score = understanding_score * 100.0
+        if mentorship.sessions_count == 1:
+            mentorship.student_progress = new_score
+        else:
+            # Weighted average: 70% old progress, 30% new score
+            mentorship.student_progress = (
+                mentorship.student_progress * 0.7 + new_score * 0.3
+            )
+        
+        # Check if student has progressed enough to end mentorship
+        if mentorship.student_progress >= 75.0 and mentorship.sessions_count >= 3:
+            # Calculate rating based on progress and sessions
+            rating = min(5.0, mentorship.student_progress / 20.0)
+            mentorship.end_mentorship(rating)
+            
+            # Record successful student outcome for teacher's reputation
+            self.agent.reputation.record_student_outcome(success=True)
+        elif mentorship.sessions_count >= 10 and mentorship.student_progress < 50.0:
+            # Student isn't progressing well after many sessions
+            rating = max(1.0, mentorship.student_progress / 20.0)
+            mentorship.end_mentorship(rating)
+            
+            # Record unsuccessful outcome
+            self.agent.reputation.record_student_outcome(success=False)
+        else:
+            # Continue teaching, small reputation boost for the session
+            self.agent.reputation.update_teaching_reputation(
+                delta=1.0,
+                reason="teaching_session"
+            )
 
 
 # Convenience functions

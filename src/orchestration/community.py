@@ -42,6 +42,7 @@ class AgentStatus:
     experiments_run: int
     students_taught: int
     reputation_score: float
+    knowledge_depth: float
 
 
 class Community:
@@ -278,6 +279,7 @@ class Community:
             experiments_run=experiments_run,
             students_taught=students_taught,
             reputation_score=agent.reputation.overall,
+            knowledge_depth=agent.knowledge.get_average_depth(),
         )
 
     async def promote_agent(self, agent_id: UUID) -> bool:

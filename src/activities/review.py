@@ -165,8 +165,11 @@ class ReviewActivity:
                 temperature=0.7,
             )
 
+            # Extract content from response dict
+            response_text = response if isinstance(response, str) else response.get("content", "")
+            
             # Parse review components
-            review_data = self._parse_review_response(response)
+            review_data = self._parse_review_response(response_text)
 
             # Generate revision suggestions
             suggestions = await self._generate_revision_suggestions(
@@ -196,8 +199,12 @@ class ReviewActivity:
             )
 
             # Update reviewer's reputation
-            self.agent.reputation.record_review_completed(
-                quality_rating=0.8  # TODO: Get from meta-review
+            self.agent.reputation.update_review_reputation(
+                delta=3.0,  # Positive reputation for completing a review
+                reason="completed_review"
+            )
+            self.agent.reputation.record_review_feedback(
+                helpfulness_rating=0.8  # TODO: Get from meta-review
             )
 
             # Track metrics

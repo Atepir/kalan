@@ -129,6 +129,7 @@ class Simulation:
             "learning_activities": 0,
             "teaching_activities": 0,
             "research_activities": 0,
+            "papers_written": 0,
             "collaborations": 0,
             "promotions": 0,
         }
@@ -208,8 +209,58 @@ class Simulation:
                 # Simulate with workflow (simplified)
                 pass
             else:
-                # Direct learning activity (simplified)
-                pass
+                # Direct learning activity - read a paper
+                try:
+                    from pathlib import Path
+                    import json
+                    from src.activities.learning import LearningActivity
+                    
+                    # Get available papers
+                    papers_dir = Path("data/papers")
+                    paper_files = list(papers_dir.glob("*.json"))
+                    
+                    if paper_files:
+                        # Pick a random paper that hasn't been read yet
+                        unread_papers = [
+                            p for p in paper_files 
+                            if p.stem not in agent.papers_read
+                        ]
+                        
+                        if not unread_papers:
+                            # All papers read, pick any random one
+                            unread_papers = paper_files
+                        
+                        paper_file = random.choice(unread_papers)
+                        
+                        # Load paper metadata
+                        with open(paper_file, 'r') as f:
+                            paper_data = json.load(f)
+                        
+                        # Create learning activity and read paper
+                        learning = LearningActivity(agent)
+                        result = await learning.read_paper(
+                            paper_id=paper_data.get('paper_id', paper_file.stem),
+                            paper_title=paper_data.get('title', 'Unknown Title'),
+                            paper_abstract=paper_data.get('abstract', ''),
+                        )
+                        
+                        self.logger.info(
+                            "paper_read",
+                            agent_id=str(agent.agent_id),
+                            agent_name=agent.name,
+                            paper_id=result.paper_id,
+                            comprehension=result.comprehension_level.value,
+                            confidence=result.confidence,
+                        )
+                        
+                        stats["papers_read"] = stats.get("papers_read", 0) + 1
+                        
+                except Exception as inner_e:
+                    self.logger.debug(
+                        "learning_activity_skipped",
+                        agent_id=str(agent.agent_id),
+                        error=str(inner_e),
+                    )
 
             stats["learning_activities"] += 1
 
@@ -270,13 +321,81 @@ class Simulation:
                 topic=topic,
             )
 
+            # Check if agent can conduct research
+            if not agent.can_conduct_research:
+                return
+
             # Use workflow or direct activity
             if self.config.enable_workflows:
                 # Simulate with workflow (simplified)
                 pass
             else:
-                # Direct research activity (simplified)
-                pass
+                # Direct research activity - write a paper
+                try:
+                    from src.activities.research import (
+                        ResearchActivity,
+                        LiteratureReview,
+                        ExperimentResult,
+                        ExperimentStatus,
+                    )
+                    
+                    # Create a research activity
+                    research = ResearchActivity(agent)
+                    
+                    # Simulate a literature review
+                    lit_review = LiteratureReview(
+                        research_question=f"How to improve {topic}?",
+                        papers_reviewed=["paper1", "paper2", "paper3"],
+                        current_state="Active research area",
+                        key_methodologies=["Method A", "Method B"],
+                        major_findings=["Finding 1", "Finding 2"],
+                        literature_gaps=["Gap 1"],
+                        contradictions=[],
+                        future_directions=["Direction 1"],
+                        timestamp=datetime.utcnow(),
+                    )
+                    
+                    # Simulate an experiment
+                    experiment = ExperimentResult(
+                        experiment_id=f"exp_{agent.agent_id}_{int(datetime.utcnow().timestamp())}",
+                        hypothesis=f"Proposed improvement to {topic}",
+                        methodology="Experimental validation",
+                        results={"accuracy": 0.85},
+                        analysis="Results show promising improvements",
+                        statistical_significance=0.05,
+                        supports_hypothesis=True,
+                        limitations=["Limited dataset"],
+                        implications=["Further research needed"],
+                        status=ExperimentStatus.COMPLETED,
+                        timestamp=datetime.utcnow(),
+                    )
+                    
+                    # Write paper (every 3rd research activity)
+                    if random.random() < 0.33:
+                        paper = await research.write_paper(
+                            title=f"Advances in {topic}",
+                            research_question=f"How to improve {topic}?",
+                            literature_review=lit_review,
+                            experiments=[experiment],
+                            keywords=[topic, "machine learning"],
+                        )
+                        
+                        self.logger.info(
+                            "paper_published",
+                            agent_id=str(agent.agent_id),
+                            agent_name=agent.name,
+                            paper_id=paper.paper_id,
+                            title=paper.title,
+                        )
+                        
+                        stats["papers_written"] = stats.get("papers_written", 0) + 1
+                    
+                except Exception as inner_e:
+                    self.logger.debug(
+                        "research_activity_skipped",
+                        agent_id=str(agent.agent_id),
+                        error=str(inner_e),
+                    )
 
             stats["research_activities"] += 1
 
@@ -362,6 +481,7 @@ class Simulation:
             "total_learning": 0,
             "total_teaching": 0,
             "total_research": 0,
+            "total_papers": 0,
             "total_collaborations": 0,
             "total_promotions": 0,
         }
@@ -379,6 +499,7 @@ class Simulation:
                 total_stats["total_learning"] += step_stats["learning_activities"]
                 total_stats["total_teaching"] += step_stats["teaching_activities"]
                 total_stats["total_research"] += step_stats["research_activities"]
+                total_stats["total_papers"] += step_stats.get("papers_written", 0)
                 total_stats["total_collaborations"] += step_stats["collaborations"]
                 total_stats["total_promotions"] += step_stats["promotions"]
 
