@@ -91,7 +91,7 @@ class TeachingActivity:
         self.agent = agent
         self.llm = get_ollama_client()
         self.metrics = MetricsCollector()
-        self.logger = get_logger(__name__, agent_id=str(agent.id))
+        self.logger = get_logger(__name__, agent_id=str(agent.agent_id))
 
     async def assess_student(
         self,
@@ -110,7 +110,7 @@ class TeachingActivity:
         """
         self.logger.info(
             "assessing_student",
-            student_id=str(student.id),
+            student_id=str(student.agent_id),
             topic=topic,
         )
 
@@ -138,7 +138,7 @@ class TeachingActivity:
 
         self.logger.info(
             "student_assessment_complete",
-            student_id=str(student.id),
+            student_id=str(student.agent_id),
             level=assessment.level.value,
         )
 
@@ -169,7 +169,7 @@ class TeachingActivity:
         self.logger.info(
             "creating_lesson",
             session_id=session_id,
-            student_id=str(student.id),
+            student_id=str(student.agent_id),
             topic=topic,
         )
 
@@ -199,8 +199,8 @@ class TeachingActivity:
 
         session = TeachingSession(
             session_id=session_id,
-            teacher_id=str(self.agent.id),
-            student_id=str(student.id),
+            teacher_id=str(self.agent.agent_id),
+            student_id=str(student.agent_id),
             topic=topic,
             explanation=explanation,
             examples=examples,
@@ -216,7 +216,7 @@ class TeachingActivity:
 
         # Track metrics
         self.metrics.track_activity(
-            agent_id=str(self.agent.id),
+            agent_id=str(self.agent.agent_id),
             activity_type="teaching",
             activity_name="create_lesson",
             outcome="success",
@@ -254,7 +254,7 @@ class TeachingActivity:
         """
         self.logger.info(
             "providing_feedback",
-            student_id=str(student.id),
+            student_id=str(student.agent_id),
             concept=concept,
         )
 
@@ -278,7 +278,7 @@ class TeachingActivity:
 
         self.logger.info(
             "feedback_provided",
-            student_id=str(student.id),
+            student_id=str(student.agent_id),
             understanding_score=feedback.understanding_score,
         )
 
@@ -323,7 +323,7 @@ Learning goals: {', '.join(student.goals[:3]) if student.goals else 'Exploring'}
             level = StudentLevel.INTERMEDIATE
 
         return StudentAssessment(
-            student_id=str(student.id),
+            student_id=str(student.agent_id),
             topic=topic,
             level=level,
             has_prerequisites=[],

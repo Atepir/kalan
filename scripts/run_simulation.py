@@ -11,24 +11,14 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from src.activities.learning import LearningActivity
-from src.activities.research import ResearchActivity
-from src.activities.review import ReviewActivity
-from src.activities.teaching import TeachingActivity
 from src.core.agent import Agent, AgentStage
 from src.orchestration.community import get_community
 from src.orchestration.events import EventType, get_event_bus
 from src.orchestration.matchmaking import Matchmaker
-from src.orchestration.workflows import (
-    CollaborationWorkflow,
-    LearningWorkflow,
-    ResearchWorkflow,
-)
 from src.storage.graph_store import get_graph_store
 from src.storage.state_store import get_state_store
 from src.storage.vector_store import get_vector_store
 from src.utils.logging import get_logger
-from src.utils.metrics import get_metrics
 
 logger = get_logger(__name__)
 
@@ -93,17 +83,6 @@ class Simulation:
         self.event_bus = get_event_bus()
         self.matchmaker = Matchmaker()
 
-        # Activities
-        self.learning_activity = LearningActivity()
-        self.teaching_activity = TeachingActivity()
-        self.research_activity = ResearchActivity()
-        self.review_activity = ReviewActivity()
-
-        # Workflows
-        self.learning_workflow = LearningWorkflow()
-        self.research_workflow = ResearchWorkflow()
-        self.collaboration_workflow = CollaborationWorkflow()
-
         # Simulation state
         self.current_step = 0
         self.start_time: datetime | None = None
@@ -124,6 +103,10 @@ class Simulation:
 
         vector_store = get_vector_store()
         await vector_store.connect()
+
+        # Load agents from database into community
+        agents_loaded = await self.community.load_agents_from_database()
+        self.logger.info("agents_loaded_into_community", count=agents_loaded)
 
         self.logger.info("simulation_initialized")
 
@@ -198,9 +181,9 @@ class Simulation:
         if self.current_step % self.config.save_interval == 0:
             await self._save_state()
 
+        # The stats dict already contains 'step', so don't pass it again
         self.logger.info(
             "simulation_step_completed",
-            step=self.current_step,
             **stats,
         )
 
@@ -215,7 +198,7 @@ class Simulation:
 
             self.logger.debug(
                 "agent_learning",
-                agent_id=str(agent.id),
+                agent_id=str(agent.agent_id),
                 agent_name=agent.name,
                 topic=topic,
             )
@@ -233,7 +216,7 @@ class Simulation:
         except Exception as e:
             self.logger.error(
                 "learning_task_failed",
-                agent_id=str(agent.id),
+                agent_id=str(agent.agent_id),
                 error=str(e),
             )
 
@@ -254,9 +237,9 @@ class Simulation:
 
             self.logger.debug(
                 "agent_teaching",
-                teacher_id=str(agent.id),
+                teacher_id=str(agent.agent_id),
                 teacher_name=agent.name,
-                student_id=str(student.id),
+                student_id=str(student.agent_id),
                 student_name=student.name,
                 topic=topic,
             )
@@ -269,7 +252,7 @@ class Simulation:
         except Exception as e:
             self.logger.error(
                 "teaching_task_failed",
-                agent_id=str(agent.id),
+                agent_id=str(agent.agent_id),
                 error=str(e),
             )
 
@@ -282,7 +265,7 @@ class Simulation:
 
             self.logger.debug(
                 "agent_researching",
-                agent_id=str(agent.id),
+                agent_id=str(agent.agent_id),
                 agent_name=agent.name,
                 topic=topic,
             )
@@ -300,7 +283,7 @@ class Simulation:
         except Exception as e:
             self.logger.error(
                 "research_task_failed",
-                agent_id=str(agent.id),
+                agent_id=str(agent.agent_id),
                 error=str(e),
             )
 
@@ -319,7 +302,7 @@ class Simulation:
 
             self.logger.debug(
                 "agent_collaborating",
-                lead_id=str(agent.id),
+                lead_id=str(agent.agent_id),
                 lead_name=agent.name,
                 num_partners=len(partners),
             )
@@ -330,7 +313,7 @@ class Simulation:
         except Exception as e:
             self.logger.error(
                 "collaboration_task_failed",
-                agent_id=str(agent.id),
+                agent_id=str(agent.agent_id),
                 error=str(e),
             )
 
@@ -340,7 +323,7 @@ class Simulation:
         agents = await self.community.list_agents(active_only=True)
 
         for agent in agents:
-            success = await self.community.promote_agent(agent.id)
+            success = await self.community.promote_agent(agent.agent_id)
             if success:
                 count += 1
 

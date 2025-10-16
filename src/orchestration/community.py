@@ -140,6 +140,45 @@ class Community:
             # Record metric
             record_metric("agents.unregistered", 1, {"stage": agent.stage.value})
 
+    async def load_agents_from_database(self) -> int:
+        """
+        Load all agents from the database into active memory.
+        
+        Returns:
+            Number of agents loaded
+        """
+        self.logger.info("loading_agents_from_database")
+        
+        # Get list of agents from database
+        agent_records = await self.state_store.list_agents(limit=1000)
+        
+        loaded_count = 0
+        for record in agent_records:
+            try:
+                # Load full agent object
+                agent_id = UUID(record["id"])
+                agent = await self.state_store.load_agent(agent_id)
+                
+                if agent:
+                    # Add to active agents without emitting events or saving
+                    # (they're already in the database)
+                    self.active_agents[UUID(agent.agent_id)] = agent
+                    loaded_count += 1
+                    
+            except Exception as e:
+                self.logger.error(
+                    "failed_to_load_agent",
+                    agent_id=record["id"],
+                    error=str(e),
+                )
+        
+        self.logger.info(
+            "agents_loaded_from_database",
+            count=loaded_count,
+        )
+        
+        return loaded_count
+
     async def get_agent(self, agent_id: UUID) -> Agent | None:
         """
         Get an agent by ID.

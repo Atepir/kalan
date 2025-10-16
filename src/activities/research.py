@@ -103,7 +103,7 @@ class ResearchActivity:
         self.agent = agent
         self.llm = get_ollama_client()
         self.metrics = MetricsCollector()
-        self.logger = get_logger(__name__, agent_id=str(agent.id))
+        self.logger = get_logger(__name__, agent_id=str(agent.agent_id))
 
     async def review_literature(
         self,
@@ -141,7 +141,7 @@ class ResearchActivity:
 
         # Track metrics
         self.metrics.track_activity(
-            agent_id=str(self.agent.id),
+            agent_id=str(self.agent.agent_id),
             activity_type="research",
             activity_name="literature_review",
             outcome="success",
@@ -278,7 +278,7 @@ class ResearchActivity:
 
             # Track metrics
             self.metrics.track_activity(
-                agent_id=str(self.agent.id),
+                agent_id=str(self.agent.agent_id),
                 activity_type="research",
                 activity_name="conduct_experiment",
                 outcome="success",

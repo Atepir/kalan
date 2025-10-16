@@ -107,7 +107,7 @@ class ReviewActivity:
         self.agent = agent
         self.llm = get_ollama_client()
         self.metrics = MetricsCollector()
-        self.logger = get_logger(__name__, agent_id=str(agent.id))
+        self.logger = get_logger(__name__, agent_id=str(agent.agent_id))
 
     async def review_paper(
         self,
@@ -178,7 +178,7 @@ class ReviewActivity:
 
             review = PeerReview(
                 review_id=review_id,
-                reviewer_id=str(self.agent.id),
+                reviewer_id=str(self.agent.agent_id),
                 paper_id=paper_id,
                 paper_title=paper_title,
                 novelty_score=review_data["novelty_score"],
@@ -202,7 +202,7 @@ class ReviewActivity:
 
             # Track metrics
             self.metrics.track_activity(
-                agent_id=str(self.agent.id),
+                agent_id=str(self.agent.agent_id),
                 activity_type="review",
                 activity_name="review_paper",
                 outcome="success",

@@ -85,7 +85,7 @@ class LearningActivity:
         self.agent = agent
         self.llm = get_ollama_client()
         self.metrics = MetricsCollector()
-        self.logger = get_logger(__name__, agent_id=str(agent.id))
+        self.logger = get_logger(__name__, agent_id=str(agent.agent_id))
 
     async def read_paper(
         self,
@@ -162,7 +162,7 @@ class LearningActivity:
 
             # Track metrics
             self.metrics.track_activity(
-                agent_id=str(self.agent.id),
+                agent_id=str(self.agent.agent_id),
                 activity_type="learning",
                 activity_name="read_paper",
                 outcome="success",
@@ -189,7 +189,7 @@ class LearningActivity:
                 error=str(e),
             )
             self.metrics.track_activity(
-                agent_id=str(self.agent.id),
+                agent_id=str(self.agent.agent_id),
                 activity_type="learning",
                 activity_name="read_paper",
                 outcome="error",
@@ -314,7 +314,7 @@ class LearningActivity:
         self.logger.info(
             "mentor_help_received",
             topic=topic,
-            mentor_id=str(mentor.id),
+            mentor_id=str(mentor.agent_id),
         )
 
         return mentor_response

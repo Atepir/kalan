@@ -242,12 +242,12 @@ class PostgresStateStore(AgentStateStore):
                 # Load agent core data
                 row = await conn.fetchrow(
                     """
-                    SELECT id, name, stage, specialization, goals,
+                    SELECT agent_id, name, stage, specialization,
                            reputation_teaching, reputation_research,
                            reputation_review, reputation_collaboration,
                            created_at
                     FROM agents
-                    WHERE id = $1
+                    WHERE agent_id = $1
                     """,
                     agent_id,
                 )
@@ -255,12 +255,30 @@ class PostgresStateStore(AgentStateStore):
                 if not row:
                     return None
 
-                # TODO: Reconstruct full Agent object from database row
-                # This requires deserializing knowledge, reputation, etc.
-                # For now, return None to indicate implementation needed
+                # Reconstruct Agent object from database row
+                from src.core.reputation import ReputationScore
+                
+                # Reconstruct reputation
+                reputation = ReputationScore(
+                    teaching=row["reputation_teaching"] or 0.0,
+                    research=row["reputation_research"] or 0.0,
+                    review=row["reputation_review"] or 0.0,
+                    collaboration=row["reputation_collaboration"] or 0.0,
+                )
+                
+                # Create agent with minimal data
+                # Knowledge graph and other complex state will be empty initially
+                agent = Agent(
+                    agent_id=str(row["agent_id"]),
+                    name=row["name"],
+                    stage=AgentStage(row["stage"]),
+                    specialization=row["specialization"],
+                    created_at=row["created_at"],
+                    reputation=reputation,
+                )
 
                 self.logger.info("agent_loaded", agent_id=str(agent_id))
-                return None  # TODO: Implement full reconstruction
+                return agent
 
         except Exception as e:
             self.logger.error("agent_load_failed", agent_id=str(agent_id), error=str(e))
@@ -325,7 +343,7 @@ class PostgresStateStore(AgentStateStore):
                 if stage:
                     rows = await conn.fetch(
                         """
-                        SELECT id, name, stage, specialization, goals, created_at
+                        SELECT agent_id, name, stage, specialization, created_at
                         FROM agents
                         WHERE stage = $1
                         ORDER BY created_at DESC
@@ -337,7 +355,7 @@ class PostgresStateStore(AgentStateStore):
                 else:
                     rows = await conn.fetch(
                         """
-                        SELECT id, name, stage, specialization, goals, created_at
+                        SELECT agent_id, name, stage, specialization, created_at
                         FROM agents
                         ORDER BY created_at DESC
                         LIMIT $1
@@ -348,11 +366,10 @@ class PostgresStateStore(AgentStateStore):
                 agents = []
                 for row in rows:
                     agents.append({
-                        "id": str(row["id"]),
+                        "id": str(row["agent_id"]),
                         "name": row["name"],
                         "stage": row["stage"],
                         "specialization": row["specialization"],
-                        "goals": json.loads(row["goals"]) if row["goals"] else [],
                         "created_at": row["created_at"].isoformat(),
                     })
 
