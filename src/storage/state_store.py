@@ -300,8 +300,8 @@ class PostgresStateStore(AgentStateStore):
                 await conn.execute(
                     """
                     UPDATE agents
-                    SET stage = $1, updated_at = $2
-                    WHERE id = $3
+                    SET stage = $1, last_active = $2
+                    WHERE agent_id = $3
                     """,
                     new_stage.value,
                     datetime.utcnow(),

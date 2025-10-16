@@ -484,7 +484,7 @@ class CommunityAnalyzer:
         # Save if path provided
         if output_path:
             output_path.parent.mkdir(parents=True, exist_ok=True)
-            with open(output_path, "w") as f:
+            with open(output_path, "w", encoding="utf-8") as f:
                 f.write(report)
             self.logger.info("report_saved", path=str(output_path))
 
