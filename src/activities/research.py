@@ -565,12 +565,47 @@ class ResearchActivity:
             }
             paper_json_file.write_text(json.dumps(paper_data, indent=2), encoding='utf-8')
             
-            self.logger.info(
-                "paper_saved_to_storage",
-                paper_id=paper.paper_id,
-                markdown_path=str(paper_file),
-                json_path=str(paper_json_file),
-            )
+            # Export to PDF
+            try:
+                from src.utils.pdf_export import export_paper_to_pdf
+                
+                paper_pdf_file = papers_dir / f"{paper.paper_id}.pdf"
+                export_paper_to_pdf(
+                    paper_id=paper.paper_id,
+                    title=paper.title,
+                    authors=paper.authors,
+                    abstract=paper.abstract,
+                    introduction=paper.introduction,
+                    methodology=paper.methodology,
+                    results=paper.results,
+                    discussion=paper.discussion,
+                    conclusion=paper.conclusion,
+                    references=paper.references,
+                    keywords=paper.keywords,
+                    timestamp=paper.timestamp,
+                    output_path=paper_pdf_file,
+                )
+                
+                self.logger.info(
+                    "paper_saved_to_storage",
+                    paper_id=paper.paper_id,
+                    markdown_path=str(paper_file),
+                    json_path=str(paper_json_file),
+                    pdf_path=str(paper_pdf_file),
+                )
+            except Exception as pdf_error:
+                # Log but don't fail if PDF generation fails
+                self.logger.warning(
+                    "pdf_export_failed",
+                    paper_id=paper.paper_id,
+                    error=str(pdf_error),
+                )
+                self.logger.info(
+                    "paper_saved_to_storage",
+                    paper_id=paper.paper_id,
+                    markdown_path=str(paper_file),
+                    json_path=str(paper_json_file),
+                )
             
         except Exception as e:
             self.logger.error(

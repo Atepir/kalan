@@ -190,6 +190,146 @@ class Simulation:
 
         return stats
 
+    async def _generate_research_content(self, agent: Agent, topic: str) -> dict[str, Any]:
+        """
+        Generate realistic research content using LLM.
+        
+        Args:
+            agent: The agent conducting research
+            topic: The research topic
+            
+        Returns:
+            Dictionary containing all research components
+        """
+        from src.llm.client import get_ollama_client
+        
+        llm = get_ollama_client()
+        
+        # Generate specific research details
+        prompt = f"""You are a research assistant helping to design a realistic research project on {topic}.
+
+Generate the following components for a research project (provide each component on a separate line with clear labels):
+
+1. TITLE: A specific, academic paper title (not just "Advances in {topic}")
+2. RESEARCH_QUESTION: A specific research question
+3. HYPOTHESIS: A testable hypothesis
+4. METHODOLOGY: A specific experimental methodology (2-3 sentences)
+5. CURRENT_STATE: Current state of research in this area (1-2 sentences)
+6. METHODOLOGIES: Three specific methodologies used in the field (comma-separated)
+7. FINDINGS: Three major findings from existing research (semicolon-separated)
+8. GAPS: Two specific gaps in the literature (semicolon-separated)
+9. FUTURE_DIRECTIONS: Two specific future research directions (semicolon-separated)
+10. KEYWORDS: 3-4 relevant keywords (comma-separated)
+
+Be specific and realistic. Avoid generic placeholders."""
+
+        response = await llm.generate(
+            prompt=prompt,
+            max_tokens=800,
+            temperature=0.8,
+        )
+        
+        content_text = response.get("content", "") if isinstance(response, dict) else response
+        
+        # Parse the response
+        parsed = self._parse_research_content(content_text, topic)
+        
+        # Add experiment-specific content
+        parsed.update({
+            "results": {
+                "accuracy": round(0.75 + random.random() * 0.20, 3),
+                "precision": round(0.70 + random.random() * 0.25, 3),
+                "training_time": round(random.uniform(10, 100), 1),
+            },
+            "analysis": f"The experimental results demonstrate the effectiveness of the proposed approach for {topic}. Key metrics show significant improvements over baseline methods.",
+            "statistical_significance": round(random.uniform(0.001, 0.05), 3),
+            "supports_hypothesis": random.random() > 0.2,  # 80% support
+            "limitations": [
+                "Limited to specific dataset configurations",
+                f"Computational complexity may scale with {topic} complexity",
+            ],
+            "implications": [
+                f"Potential for real-world applications in {topic}",
+                "Opens new avenues for future research",
+            ],
+            "papers_reviewed": [
+                f"Prior work on {topic} foundations",
+                f"Recent advances in {topic} methods",
+                f"Comparative study of {topic} approaches",
+            ],
+            "contradictions": [],
+        })
+        
+        return parsed
+
+    def _parse_research_content(self, llm_response: str, topic: str) -> dict[str, Any]:
+        """Parse research content from LLM response."""
+        lines = llm_response.strip().split('\n')
+        
+        # Default values in case parsing fails
+        defaults = {
+            "title": f"Novel Approaches to {topic.title()} Optimization",
+            "research_question": f"How can we improve efficiency and performance in {topic} systems?",
+            "hypothesis": f"A novel architecture can enhance {topic} performance",
+            "methodology": f"We designed a controlled experiment comparing our approach against state-of-the-art {topic} methods using standard benchmarks",
+            "current_state": f"Current {topic} research focuses on improving performance and scalability",
+            "methodologies": ["Deep learning approaches", "Optimization techniques", "Ensemble methods"],
+            "findings": [
+                f"Existing {topic} methods show promising results",
+                "Recent techniques improve upon traditional approaches",
+                "Performance varies significantly across different configurations",
+            ],
+            "gaps": [
+                f"Limited research on scalability in {topic}",
+                "Insufficient attention to computational efficiency",
+            ],
+            "future_directions": [
+                f"Exploring novel architectures for {topic}",
+                "Investigating cross-domain applications",
+            ],
+            "keywords": [topic, "machine learning", "optimization", "performance"],
+        }
+        
+        # Try to parse LLM response
+        parsed = {}
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+                
+            # Try to extract labeled content
+            if "TITLE:" in line:
+                parsed["title"] = line.split("TITLE:", 1)[1].strip().strip('"')
+            elif "RESEARCH_QUESTION:" in line:
+                parsed["research_question"] = line.split("RESEARCH_QUESTION:", 1)[1].strip()
+            elif "HYPOTHESIS:" in line:
+                parsed["hypothesis"] = line.split("HYPOTHESIS:", 1)[1].strip()
+            elif "METHODOLOGY:" in line:
+                parsed["methodology"] = line.split("METHODOLOGY:", 1)[1].strip()
+            elif "CURRENT_STATE:" in line:
+                parsed["current_state"] = line.split("CURRENT_STATE:", 1)[1].strip()
+            elif "METHODOLOGIES:" in line:
+                methods_str = line.split("METHODOLOGIES:", 1)[1].strip()
+                parsed["methodologies"] = [m.strip() for m in methods_str.split(',')][:3]
+            elif "FINDINGS:" in line:
+                findings_str = line.split("FINDINGS:", 1)[1].strip()
+                parsed["findings"] = [f.strip() for f in findings_str.split(';')][:3]
+            elif "GAPS:" in line:
+                gaps_str = line.split("GAPS:", 1)[1].strip()
+                parsed["gaps"] = [g.strip() for g in gaps_str.split(';')][:2]
+            elif "FUTURE_DIRECTIONS:" in line:
+                dirs_str = line.split("FUTURE_DIRECTIONS:", 1)[1].strip()
+                parsed["future_directions"] = [d.strip() for d in dirs_str.split(';')][:2]
+            elif "KEYWORDS:" in line:
+                kw_str = line.split("KEYWORDS:", 1)[1].strip()
+                parsed["keywords"] = [k.strip() for k in kw_str.split(',')]
+        
+        # Merge parsed with defaults
+        result = defaults.copy()
+        result.update(parsed)
+        
+        return result
+
     async def _learning_task(self, agent: Agent, stats: dict) -> None:
         """Execute learning task for agent."""
         try:
@@ -342,30 +482,33 @@ class Simulation:
                     # Create a research activity
                     research = ResearchActivity(agent)
                     
-                    # Simulate a literature review
+                    # Generate realistic research content
+                    research_content = await self._generate_research_content(agent, topic)
+                    
+                    # Simulate a literature review with realistic content
                     lit_review = LiteratureReview(
-                        research_question=f"How to improve {topic}?",
-                        papers_reviewed=["paper1", "paper2", "paper3"],
-                        current_state="Active research area",
-                        key_methodologies=["Method A", "Method B"],
-                        major_findings=["Finding 1", "Finding 2"],
-                        literature_gaps=["Gap 1"],
-                        contradictions=[],
-                        future_directions=["Direction 1"],
+                        research_question=research_content["research_question"],
+                        papers_reviewed=research_content["papers_reviewed"],
+                        current_state=research_content["current_state"],
+                        key_methodologies=research_content["methodologies"],
+                        major_findings=research_content["findings"],
+                        literature_gaps=research_content["gaps"],
+                        contradictions=research_content["contradictions"],
+                        future_directions=research_content["future_directions"],
                         timestamp=datetime.utcnow(),
                     )
                     
-                    # Simulate an experiment
+                    # Simulate an experiment with realistic content
                     experiment = ExperimentResult(
                         experiment_id=f"exp_{agent.agent_id}_{int(datetime.utcnow().timestamp())}",
-                        hypothesis=f"Proposed improvement to {topic}",
-                        methodology="Experimental validation",
-                        results={"accuracy": 0.85},
-                        analysis="Results show promising improvements",
-                        statistical_significance=0.05,
-                        supports_hypothesis=True,
-                        limitations=["Limited dataset"],
-                        implications=["Further research needed"],
+                        hypothesis=research_content["hypothesis"],
+                        methodology=research_content["methodology"],
+                        results=research_content["results"],
+                        analysis=research_content["analysis"],
+                        statistical_significance=research_content["statistical_significance"],
+                        supports_hypothesis=research_content["supports_hypothesis"],
+                        limitations=research_content["limitations"],
+                        implications=research_content["implications"],
                         status=ExperimentStatus.COMPLETED,
                         timestamp=datetime.utcnow(),
                     )
@@ -373,11 +516,11 @@ class Simulation:
                     # Write paper (every 3rd research activity)
                     if random.random() < 0.33:
                         paper = await research.write_paper(
-                            title=f"Advances in {topic}",
-                            research_question=f"How to improve {topic}?",
+                            title=research_content["title"],
+                            research_question=research_content["research_question"],
                             literature_review=lit_review,
                             experiments=[experiment],
-                            keywords=[topic, "machine learning"],
+                            keywords=research_content["keywords"],
                         )
                         
                         self.logger.info(

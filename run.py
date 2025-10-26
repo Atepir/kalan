@@ -106,8 +106,32 @@ class MasterRunner:
                     print(f"❌ Failed to start services: {start_result.stderr}")
                     return False
                 print("✅ Docker services started")
-                print("   Waiting 10 seconds for services to be ready...")
-                time.sleep(10)
+                print("   Waiting for services to be ready...")
+
+                # Wait for critical services (Postgres and Neo4j) to accept TCP connections.
+                import socket
+
+                def wait_for_port(host: str, port: int, timeout: int = 60) -> bool:
+                    """Wait until a TCP connection can be established to host:port or timeout."""
+                    deadline = time.time() + timeout
+                    while time.time() < deadline:
+                        try:
+                            with socket.create_connection((host, port), timeout=3):
+                                return True
+                        except Exception:
+                            time.sleep(1)
+                    return False
+
+                postgres_ready = wait_for_port("127.0.0.1", 5433, timeout=60)
+                neo4j_ready = wait_for_port("127.0.0.1", 7687, timeout=60)
+
+                if not postgres_ready:
+                    print("❌ PostgreSQL did not become ready in time")
+                    return False
+                if not neo4j_ready:
+                    print("❌ Neo4j did not become ready in time")
+                    return False
+                print("✅ Services are accepting connections")
             else:
                 print("✅ Docker services are running")
 
@@ -401,7 +425,7 @@ async def main():
     parser.add_argument(
         "--steps",
         type=int,
-        default=50,
+        default=5000,
         help="Number of simulation steps (default: 50)",
     )
     parser.add_argument(
